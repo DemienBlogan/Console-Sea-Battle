@@ -1,5 +1,5 @@
-#include "Game.h"
-#include "Time.h"
+#include "Game/Game.h"
+#include "Time/Time.h"
 
 int main()
 {

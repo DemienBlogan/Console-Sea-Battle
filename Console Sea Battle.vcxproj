@@ -139,13 +139,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="SourceCode\FileManager\FileManager.cpp" />
+    <ClCompile Include="SourceCode\Console\Console.cpp" />
+    <ClCompile Include="SourceCode\Game\Game.cpp" />
+    <ClCompile Include="SourceCode\main.cpp" />
+    <ClCompile Include="SourceCode\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="SourceCode\FileManager\FileManager.h" />
+    <ClInclude Include="SourceCode\Console\Console.h" />
+    <ClInclude Include="SourceCode\Game\Game.h" />
+    <ClInclude Include="SourceCode\Time\Time.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\StartScreen\CompanyLogo.txt" />
+    <Text Include="Resources\StartScreen\GameLogo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
