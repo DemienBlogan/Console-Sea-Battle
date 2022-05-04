@@ -152,7 +152,9 @@
     <ClInclude Include="SourceCode\Time\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Resources\Menus\ConfirmationMenu.txt" />
     <Text Include="Resources\Menus\MainMenu.txt" />
+    <Text Include="Resources\Tutorial\TutorialPage1.txt" />
     <Text Include="Resources\StartScreen\CompanyLogo.txt" />
     <Text Include="Resources\StartScreen\GameLogo.txt" />
   </ItemGroup>

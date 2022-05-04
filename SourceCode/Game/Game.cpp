@@ -16,7 +16,7 @@ void Game::RenderLogo(const std::wstring& logoContent)
 		}
 	}
 
-	Console::WaitForMilliseconds(3000);
+	Console::WaitForMilliseconds(2000);
 	Console::ClearScreen();
 }
 
