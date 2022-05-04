@@ -48,5 +48,6 @@
   <ItemGroup>
     <Text Include="Resources\StartScreen\CompanyLogo.txt" />
     <Text Include="Resources\StartScreen\GameLogo.txt" />
+    <Text Include="Resources\Menus\MainMenu.txt" />
   </ItemGroup>
 </Project>

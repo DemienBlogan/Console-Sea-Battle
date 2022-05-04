@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 class Game
@@ -9,11 +8,18 @@ private:
 
 	bool isRunning = false;
 
+	// Console properties:
+	const std::wstring title = L"Console Sea Battle";
+	const std::wstring gameFontName = L"Consolas";
+	const int gameFontSize = 30;
+	const int windowWidth = 71;
+	const int windowHeight = 23;
+
 	std::wstring companyLogoFileContent;
-	std::wstring companyLogoFileName = L"Resources/StartScreen/CompanyLogo.txt";
+	const std::wstring companyLogoFileName = L"Resources/StartScreen/CompanyLogo.txt";
 
 	std::wstring gameLogoFileContent;
-	std::wstring gameLogoFileName = L"Resources/StartScreen/GameLogo.txt";
+	const std::wstring gameLogoFileName = L"Resources/StartScreen/GameLogo.txt";
 
 	enum class Scene
 	{
@@ -21,7 +27,6 @@ private:
 		Menu,
 		Game
 	};
-
 	Scene currentScene = Scene::StartScreen;
 
 	void RenderLogo(const std::wstring& logoContent);

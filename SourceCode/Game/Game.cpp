@@ -29,6 +29,13 @@ Game& Game::GetInstance()
 void Game::Initialize()
 {
 	Console::SetUnicodeCodepage();
+	Console::SetDimensions(windowWidth, windowHeight);
+	Console::HideCursor();
+	Console::DisableMaximizeButton();
+	Console::DisableScrollBars();
+	Console::SetTitle(title);
+	Console::SetFont(gameFontName, gameFontSize);
+	Console::SetWindowPositionOnScreenCenter();
 
 	// Read logos:
 	companyLogoFileContent = FileManager::ReadTextFile(companyLogoFileName);
