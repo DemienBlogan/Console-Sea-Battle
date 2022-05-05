@@ -7,17 +7,17 @@
 *           |_____] |_____|    |       |    |      |______             *
 *           |_____] |     |    |       |    |_____ |______             *
 *                                                                      *
-*                           TUTORIAL (PAGE 1)                -> PAGE 2 *
+* PAGE 1 <-                 TUTORIAL (PAGE 2)                -> PAGE 3 *
 * +------------------------------------------------------------------+ *
-* | Menu navigation:                                                 | *
-* | - To move to a desired menu item, press arrows 'UP' and 'Down'.  | *
-* | - To select a desired menu item, press 'Enter' key.              | *
-* | - To come back to the main menu, prees 'ESC' key.                | *
-* | - To quit the game, use 'ESC' key in the main menu OR            | *
-* |   use ALT + F4 keys combination.                                 | *
-* | Tutorial navigation:                                             | *
-* |   - To turn next/previous page in tutorial, press arrows "LEFT"  | *
-* |     and "RIGHT"                                                  | *
-* |   - To quit from tutorial, press 'ESC' key.                      | *
+* | Game rules (part 1):                                             | *
+* | When you select 'Start game' menu item, you need to choose       | *
+* | computer difficulty (easy, normal, hard). After than you need    | *
+* | to place all your ships on the field. Follow the instructions.   | *
+* |                                                                  | *
+* | All players have set of ships: one 4parts ship, two 3parts ships,| *
+* | three 2parts ships, and four 1part ships.                        | *
+* |                                                                  | *
+* | You place your ships manually, computer does it automatically    | *
+* | and randomly. After that game starts and war actions begin.      | *
 * +------------------------------------------------------------------+ *
 ************************************************************************

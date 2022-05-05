@@ -7,17 +7,17 @@
 *           |_____] |_____|    |       |    |      |______             *
 *           |_____] |     |    |       |    |_____ |______             *
 *                                                                      *
-*                           TUTORIAL (PAGE 1)                -> PAGE 2 *
+* PAGE 2 <-                 TUTORIAL (PAGE 3)                          *
 * +------------------------------------------------------------------+ *
-* | Menu navigation:                                                 | *
-* | - To move to a desired menu item, press arrows 'UP' and 'Down'.  | *
-* | - To select a desired menu item, press 'Enter' key.              | *
-* | - To come back to the main menu, prees 'ESC' key.                | *
-* | - To quit the game, use 'ESC' key in the main menu OR            | *
-* |   use ALT + F4 keys combination.                                 | *
-* | Tutorial navigation:                                             | *
-* |   - To turn next/previous page in tutorial, press arrows "LEFT"  | *
-* |     and "RIGHT"                                                  | *
-* |   - To quit from tutorial, press 'ESC' key.                      | *
+* | Game rules (part 2):                                             | *
+* | You moves first. To take a shot at enemy, you need to enter      | *
+* | coordinates of enemy's field: Letter first, then digit, and      | *
+* | press 'Enter' key. If you hit, the game will tell you that,      | *
+* | and you need to shoot again. If you miss - game also will tell   | *
+* | you that and enemy will shot. You will see his coordinates and   | *
+* | shot information. Every miss (your or enemy's) is marked '*'.    | *
+* | Ships' parts are marked 'O'. Hits are marked 'X'. Game ends      | *
+* | when your or enemy's all ships are sinked. GOOD LUCK!            | *
+* |                                                                  | *
 * +------------------------------------------------------------------+ *
 ************************************************************************

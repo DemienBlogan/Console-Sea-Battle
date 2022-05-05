@@ -51,5 +51,12 @@
     <Text Include="Resources\Menus\MainMenu.txt" />
     <Text Include="Resources\Menus\ConfirmationMenu.txt" />
     <Text Include="Resources\Tutorial\TutorialPage1.txt" />
+    <Text Include="Resources\Tutorial\TutorialPage2.txt" />
+    <Text Include="Resources\Tutorial\TutorialPage3.txt" />
+    <Text Include="Resources\Menus\OptionsMenu.txt" />
+    <Text Include="Resources\Credits\Credits.txt" />
+    <Text Include="Resources\Menus\ColorThemeMenu.txt" />
+    <Text Include="Resources\Menus\MusicAndSoundsMenu.txt" />
+    <Text Include="Resources\Menus\DifficultiesMenu.txt" />
   </ItemGroup>
 </Project>

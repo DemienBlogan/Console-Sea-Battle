@@ -7,17 +7,17 @@
 *           |_____] |_____|    |       |    |      |______             *
 *           |_____] |     |    |       |    |_____ |______             *
 *                                                                      *
-*                           TUTORIAL (PAGE 1)                -> PAGE 2 *
+*                              CREDITS                                 *
 * +------------------------------------------------------------------+ *
-* | Menu navigation:                                                 | *
-* | - To move to a desired menu item, press arrows 'UP' and 'Down'.  | *
-* | - To select a desired menu item, press 'Enter' key.              | *
-* | - To come back to the main menu, prees 'ESC' key.                | *
-* | - To quit the game, use 'ESC' key in the main menu OR            | *
-* |   use ALT + F4 keys combination.                                 | *
-* | Tutorial navigation:                                             | *
-* |   - To turn next/previous page in tutorial, press arrows "LEFT"  | *
-* |     and "RIGHT"                                                  | *
-* |   - To quit from tutorial, press 'ESC' key.                      | *
+* | My name is Demian Kozachuk. And I am the author of this game.    | *
+* | It's my second project for my portfolio. Hope you will enjoy     | *
+* | my game. If you want to contact me, use these contacts:          | *
+* |                                                                  | *
+* | EMAIL:     demiankozachuk@gmail.com                              | *
+* | Facebook:  www.facebook.com/demian.kozachuk.1996                 | *
+* | LinkedIn:  www.linkedin.com/in/demiankozachuk                    | *
+* | Instagram: www.instagram.com/demian.kozachuk                     | *
+* |                                                                  | *
+* |                                                                  | *
 * +------------------------------------------------------------------+ *
 ************************************************************************
