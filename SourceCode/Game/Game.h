@@ -21,6 +21,34 @@ private:
 	std::wstring gameLogoFileContent;
 	const std::wstring gameLogoFileName = L"Resources/StartScreen/GameLogo.txt";
 
+	std::wstring mainMenuFileContent;
+	const std::wstring mainMenuFileName = L"Resources/Menus/MainMenu.txt";
+
+	std::wstring optionsMenuFileContent;
+	const std::wstring optionsMenuFileName = L"Resources/Menus/OptionsMenu.txt";
+
+	std::wstring colorThemesMenuFileContent;
+	const std::wstring colorThemesMenuFileName = L"Resources/Menus/ColorThemesMenu.txt";
+
+	std::wstring musicAndSoundsMenuFileContent;
+	const std::wstring musicAndSoundsMenuFileName = L"Resources/Menus/MusicAndSoundsMenu.txt";
+
+	std::wstring creditsMenuFileContent;
+	const std::wstring creditsMenuFileName = L"Resources/Credits/Credits.txt";
+
+	std::wstring difficultiesMenuFileContent;
+	const std::wstring difficultiesMenuFileName = L"Resources/Menus/DifficultiesMenu.txt";
+
+	static const int TUTORIAL_PAGES_COUNT = 3;
+	std::wstring tutorialPagesFileContent[TUTORIAL_PAGES_COUNT];
+	const std::wstring tutorialPagesFileNames[TUTORIAL_PAGES_COUNT] =
+	{
+		L"Resources/Tutorial/TutorialPage1.txt",
+		L"Resources/Tutorial/TutorialPage2.txt",
+		L"Resources/Tutorial/TutorialPage3.txt"
+	};
+	int currentPage = 0;
+
 	enum class Scene
 	{
 		StartScreen,
@@ -28,6 +56,18 @@ private:
 		Game
 	};
 	Scene currentScene = Scene::StartScreen;
+
+	enum class Menu
+	{
+		Main,
+		Options,
+		Tutorial,
+		ColorThemes,
+		MusicAndSounds,
+		Credits,
+		Difficulties
+	};
+	Menu currentMenu = Menu::Main;
 
 	void RenderLogo(const std::wstring& logoContent);
 
@@ -41,6 +81,8 @@ public:
 	void HandleInput();
 	void Update(float deltaTime);
 	void Render();
+
+	void RenderMenu();
 
 #pragma region Exception
 	class Exception

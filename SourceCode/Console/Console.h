@@ -16,4 +16,6 @@ public:
 	static void SetDimensions(int width, int height);
 	static void GetDesktopDimensions(int& width, int& height);
 	static void SetWindowPositionOnScreenCenter();
+	static void SetCursorPosition(int x, int y);
+	static void ResetCursorPosition();
 };

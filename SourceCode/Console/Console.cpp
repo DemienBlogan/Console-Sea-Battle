@@ -5,6 +5,7 @@
 #include <io.h>
 #include <thread>
 #include <Windows.h>
+#include <iostream>
 
 void Console::ClearScreen()
 {
@@ -114,4 +115,17 @@ void Console::SetWindowPositionOnScreenCenter()
 
 	// Set console window position on screen center:
 	SetWindowPos(consoleWindow, 0, centerPositionX, centerPositionY, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+}
+
+void Console::SetCursorPosition(int x, int y)
+{
+	static HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::wcout.flush();
+	COORD newCursorPosition = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+	SetConsoleCursorPosition(consoleWindow, newCursorPosition);
+}
+
+void Console::ResetCursorPosition()
+{
+	SetCursorPosition(0, 0);
 }

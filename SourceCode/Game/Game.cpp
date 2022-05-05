@@ -41,6 +41,22 @@ void Game::Initialize()
 	companyLogoFileContent = FileManager::ReadTextFile(companyLogoFileName);
 	gameLogoFileContent = FileManager::ReadTextFile(gameLogoFileName);
 
+	// Read menus:
+	mainMenuFileContent = FileManager::ReadTextFile(mainMenuFileName);
+	optionsMenuFileContent = FileManager::ReadTextFile(optionsMenuFileName);
+	colorThemesMenuFileContent = FileManager::ReadTextFile(colorThemesMenuFileName);
+	musicAndSoundsMenuFileContent = FileManager::ReadTextFile(musicAndSoundsMenuFileName);
+	difficultiesMenuFileContent = FileManager::ReadTextFile(difficultiesMenuFileName);
+
+	// Read tutorial:
+	for (int i = 0; i < TUTORIAL_PAGES_COUNT; i++)
+	{
+		tutorialPagesFileContent[i] = FileManager::ReadTextFile(tutorialPagesFileNames[i]);
+	}
+
+	// Read credits:
+	creditsMenuFileContent = FileManager::ReadTextFile(creditsMenuFileName);
+
 	isRunning = true;
 }
 
@@ -75,7 +91,7 @@ void Game::Render()
 		break;
 
 	case Game::Scene::Menu:
-		// TODO: Write code
+		RenderMenu();
 		break;
 
 	case Game::Scene::Game:
@@ -85,6 +101,38 @@ void Game::Render()
 	default:
 		throw Exception(L"Variable 'currentScene' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
+}
+
+void Game::RenderMenu()
+{
+	switch (currentMenu)
+	{
+	case Game::Menu::Main:
+		std::wcout << mainMenuFileContent;
+		break;
+	case Game::Menu::Options:
+		std::wcout << optionsMenuFileContent;
+		break;
+	case Game::Menu::Tutorial:
+		std::wcout << tutorialPagesFileContent[currentPage];
+		break;
+	case Game::Menu::ColorThemes:
+		std::wcout << colorThemesMenuFileContent;
+		break;
+	case Game::Menu::MusicAndSounds:
+		std::wcout << musicAndSoundsMenuFileContent;
+		break;
+	case Game::Menu::Credits:
+		std::wcout << creditsMenuFileContent;
+		break;
+	case Game::Menu::Difficulties:
+		std::wcout << difficultiesMenuFileContent;
+		break;
+	default:
+		throw Exception(L"Variable 'currentMenu' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
+	}
+
+	Console::ResetCursorPosition();
 }
 
 void Game::HandleException(const Exception& exc)
