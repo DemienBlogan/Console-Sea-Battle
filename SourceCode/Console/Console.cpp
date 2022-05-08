@@ -7,6 +7,23 @@
 #include <Windows.h>
 #include <iostream>
 
+Console::Color Console::fontColor = Console::Color::White;
+Console::Color Console::backgroundColor = Console::Color::Black;
+
+void Console::SetConsoleColor()
+{
+	// This method uses 'system' function.
+	// Function 'system' gets c-string.
+	// To change console color, we need to send c-string "Color XX",
+	// where XX is two OCT digits. First is background color, and
+	// second is text color. So I build c-string first, and then 
+	// invoke 'system' function
+	char colorRepresentation[9] = "Color ";
+	colorRepresentation[6] = static_cast<char>(backgroundColor);
+	colorRepresentation[7] = static_cast<char>(fontColor);
+	system(colorRepresentation);
+}
+
 void Console::ClearScreen()
 {
 	system("cls");
@@ -108,7 +125,7 @@ void Console::SetWindowPositionOnScreenCenter()
 	GetWindowRect(consoleWindow, &consoleRectangle);
 	int consoleWidth = consoleRectangle.right - consoleRectangle.left;
 	int consoleHeight = consoleRectangle.bottom - consoleRectangle.top;
-	
+
 	// Calculate console window new position;
 	int centerPositionX = (desktopWidth / 2) - (consoleWidth / 2);
 	int centerPositionY = (desktopHeight / 2) - (consoleHeight / 2);
@@ -128,4 +145,16 @@ void Console::SetCursorPosition(int x, int y)
 void Console::ResetCursorPosition()
 {
 	SetCursorPosition(0, 0);
+}
+
+void Console::SetFontColor(Color color)
+{
+	fontColor = color;
+	SetConsoleColor();
+}
+
+void Console::SetBackgroundColor(Color color)
+{
+	backgroundColor = color;
+	SetConsoleColor();
 }

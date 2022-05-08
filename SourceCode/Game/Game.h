@@ -5,6 +5,7 @@ class Game
 {
 private:
 	Game() = default;
+	~Game();
 
 	bool isRunning = false;
 
@@ -49,13 +50,14 @@ private:
 	};
 	int currentPage = 0;
 
+	const std::wstring colorThemeInfoFileName = L"Resources/Data/ColorTheme.bin";
+
 	enum class Scene
 	{
 		StartScreen,
 		Menu,
 		Game
-	};
-	Scene currentScene = Scene::StartScreen;
+	} currentScene = Scene::StartScreen;
 
 	enum class Menu
 	{
@@ -66,10 +68,90 @@ private:
 		MusicAndSounds,
 		Credits,
 		Difficulties
-	};
-	Menu currentMenu = Menu::Main;
+	} currentMenu = Menu::Main;
+
+	enum class MainMenuItem
+	{
+		StartGame,
+		Options,
+		Tutorial,
+		Exit
+	} selectedMainMenuItem = MainMenuItem::StartGame;
+
+	enum class OptionsMenuItem
+	{
+		ColorTheme,
+		MusicAndSounds,
+		Credits,
+		BackToMainMenu
+	} selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
+
+	enum class DifficultiesMenuItem
+	{
+		Easy,
+		Normal,
+		Hard,
+		BackToMainMenu
+	} selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
+
+	enum class ColorThemesMenuItem
+	{
+		WhiteBlack,
+		BlueAqua,
+		BlackWhite,
+		PurpleYellow,
+		BackToMainMenu
+	} selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
+
+	enum class ColorTheme
+	{
+		WhiteBlack,
+		BlueAqua,
+		BlackWhite,
+		PurpleYellow,
+	} currentColorTheme = ColorTheme::WhiteBlack; // default value
+
+	enum class Difficulty
+	{
+		Easy,
+		Normal,
+		Hard,
+		None
+	} difficulty = Difficulty::None;
+
+	void ReadColorThemeFromFile();
+	void WriteColorThemeToFile() const;
+	void SetColorTheme() const;
+	void SetPlusSignOnColorThemeMenuItem();
+
+	template <typename MenuItem>
+	void MoveMenuItemUp(MenuItem& selectedItem, MenuItem firstItem, MenuItem lastItem)
+	{
+		selectedItem = (selectedItem == firstItem) ? lastItem : static_cast<MenuItem>(static_cast<int>(selectedItem) - 1);
+	}
+
+	template <typename MenuItem>
+	void MoveMenuItemDown(MenuItem& selectedItem, MenuItem firstItem, MenuItem lastItem)
+	{
+		selectedItem = (selectedItem == lastItem) ? firstItem : static_cast<MenuItem>(static_cast<int>(selectedItem) + 1);
+	}
+
+	void HandleInputMenu();
+	void HandleInputMainMenu();
+	void HandleInputTutorialMenu();
+	void HandleInputCreditsMenu();
+	void HandleInputOptionsMenu();
+	void HandleInputDifficultiesMenu();
+	void HandleInputColorThemesMenu();
+
+	void UpdateMenu();
+	void UpdateMainMenu();
+	void UpdateOptionsMenu();
+	void UpdateDifficultiesMenu();
+	void UpdateColorThemesMenu();
 
 	void RenderLogo(const std::wstring& logoContent);
+	void RenderMenu();
 
 public:
 	Game(const Game&) = delete;
@@ -79,10 +161,8 @@ public:
 	void Initialize();
 	bool IsRunning() const;
 	void HandleInput();
-	void Update(float deltaTime);
+	void Update();
 	void Render();
-
-	void RenderMenu();
 
 #pragma region Exception
 	class Exception

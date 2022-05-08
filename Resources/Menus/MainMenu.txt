@@ -10,7 +10,7 @@
 *                        +-----------------+                           *
 *                        |    MAIN MENU    |                           *
 *                        |                 |                           *
-*                        | [  ] Start game |                           *
+*                        | [  ] Start Game |                           *
 *                        |                 |                           *
 *                        | [  ] Options    |                           *
 *                        |                 |                           *

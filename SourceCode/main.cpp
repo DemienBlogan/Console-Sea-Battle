@@ -1,5 +1,4 @@
 #include "Game/Game.h"
-#include "Time/Time.h"
 
 int main()
 {
@@ -11,7 +10,7 @@ int main()
 		while (game.IsRunning())
 		{
 			game.HandleInput();
-			game.Update(Time::DeltaTime());
+			game.Update();
 			game.Render();
 		}
 	}

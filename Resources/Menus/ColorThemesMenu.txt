@@ -11,10 +11,10 @@
 *                      |        COLOR THEME          |                 *
 *                      |                             |                 *
 *                      |          Font    Background |                 *
-*                      | [  ] { } Gray    Black      |                 *
-*                      | [  ] { } Yellow  Blue       |                 *
+*                      | [  ] { } White   Black      |                 *
+*                      | [  ] { } Blue    Aqua       |                 *
 *                      | [  ] { } Black   White      |                 *
-*                      | [  ] { } Purple  Orange     |                 *
+*                      | [  ] { } Purple  Yellow     |                 *
 *                      |                             |                 *
 *                      | [  ] Back to options menu   |                 *
 *                      |                             |                 *
