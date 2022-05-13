@@ -12,7 +12,7 @@
 *                      |                        |                      *
 *                      | [  ] Color theme       |                      *
 *                      |                        |                      *
-*                      | [  ] Music & Sounds    |                      *
+*                      | [  ] Audio             |                      *
 *                      |                        |                      *
 *                      | [  ] Credits           |                      *
 *                      |                        |                      *

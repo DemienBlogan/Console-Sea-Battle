@@ -30,6 +30,9 @@
     <ClCompile Include="SourceCode\Input\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SourceCode\AudioManager\AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\Game\Game.h">
@@ -44,6 +47,72 @@
     <ClInclude Include="SourceCode\Input\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\AudioManager\AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\BufferHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\CommonStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\DirectXHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GamePad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GeometricPrimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GraphicsMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\PostProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\PrimitiveBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\ScreenGrab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SimpleMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SpriteBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SpriteFont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\VertexTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\WICTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\DirectXTK\Includes\XboxDDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\StartScreen\CompanyLogo.txt" />
@@ -56,7 +125,35 @@
     <Text Include="Resources\Menus\OptionsMenu.txt" />
     <Text Include="Resources\Credits\Credits.txt" />
     <Text Include="Resources\Menus\ColorThemesMenu.txt" />
-    <Text Include="Resources\Menus\MusicAndSoundsMenu.txt" />
+    <Text Include="Resources\Menus\AudioMenu.txt" />
     <Text Include="Resources\Menus\DifficultiesMenu.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Data\ColorTheme.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Data\AudioSettings.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include=".gitattributes" />
+    <None Include="README.md" />
+    <None Include=".gitignore" />
+    <None Include="SourceCode\DirectXTK\Includes\SimpleMath.inl">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resources\Music\BackgroundMusic.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Resources\Audio\BackgroundMenuMusic.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Resources\Audio\ChangeMenuItemSound.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Resources\Audio\SelectMenuItemSound.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

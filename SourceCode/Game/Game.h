@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "../AudioManager/AudioManager.h"
 
 class Game
 {
@@ -8,6 +9,8 @@ private:
 	~Game();
 
 	bool isRunning = false;
+
+	AudioManager& audioManager = AudioManager::GetReference();
 
 	// Console properties:
 	const std::wstring title = L"Console Sea Battle";
@@ -31,8 +34,8 @@ private:
 	std::wstring colorThemesMenuFileContent;
 	const std::wstring colorThemesMenuFileName = L"Resources/Menus/ColorThemesMenu.txt";
 
-	std::wstring musicAndSoundsMenuFileContent;
-	const std::wstring musicAndSoundsMenuFileName = L"Resources/Menus/MusicAndSoundsMenu.txt";
+	std::wstring audioMenuFileContent;
+	const std::wstring audioMenuFileName = L"Resources/Menus/AudioMenu.txt";
 
 	std::wstring creditsMenuFileContent;
 	const std::wstring creditsMenuFileName = L"Resources/Credits/Credits.txt";
@@ -65,7 +68,7 @@ private:
 		Options,
 		Tutorial,
 		ColorThemes,
-		MusicAndSounds,
+		Audio,
 		Credits,
 		Difficulties
 	} currentMenu = Menu::Main;
@@ -81,7 +84,7 @@ private:
 	enum class OptionsMenuItem
 	{
 		ColorTheme,
-		MusicAndSounds,
+		Audio,
 		Credits,
 		BackToMainMenu
 	} selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
@@ -100,8 +103,17 @@ private:
 		BlueAqua,
 		BlackWhite,
 		PurpleYellow,
-		BackToMainMenu
+		BackToOptionsMenu
 	} selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
+
+	enum class AudioMenuItem
+	{
+		MusicOn,
+		MusicOff,
+		SoundsOn,
+		SoundsOff,
+		BackToOptionsMenu
+	} selectedAudioMenuItem = AudioMenuItem::MusicOn;
 
 	enum class ColorTheme
 	{
@@ -123,6 +135,7 @@ private:
 	void WriteColorThemeToFile() const;
 	void SetColorTheme() const;
 	void SetPlusSignOnColorThemeMenuItem();
+	void SetPlusSignOnAudioMenuItem();
 
 	template <typename MenuItem>
 	void MoveMenuItemUp(MenuItem& selectedItem, MenuItem firstItem, MenuItem lastItem)
@@ -143,12 +156,14 @@ private:
 	void HandleInputOptionsMenu();
 	void HandleInputDifficultiesMenu();
 	void HandleInputColorThemesMenu();
+	void HandleInputAudioMenu();
 
 	void UpdateMenu();
 	void UpdateMainMenu();
 	void UpdateOptionsMenu();
 	void UpdateDifficultiesMenu();
 	void UpdateColorThemesMenu();
+	void UpdateAudioMenu();
 
 	void RenderLogo(const std::wstring& logoContent);
 	void RenderMenu();

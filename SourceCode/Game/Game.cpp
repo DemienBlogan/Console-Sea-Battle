@@ -25,8 +25,8 @@ void Game::HandleInputMenu()
 		HandleInputColorThemesMenu();
 		break;
 
-	case Game::Menu::MusicAndSounds:
-		// TODO: Write code
+	case Game::Menu::Audio:
+		HandleInputAudioMenu();
 		break;
 
 	case Game::Menu::Credits:
@@ -52,13 +52,16 @@ void Game::HandleInputMainMenu()
 		{
 		case Input::Key::ArrowUp:
 			MoveMenuItemUp(selectedMainMenuItem, MainMenuItem::StartGame, MainMenuItem::Exit);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::ArrowDown:
 			MoveMenuItemDown(selectedMainMenuItem, MainMenuItem::StartGame, MainMenuItem::Exit);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::Enter:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			switch (selectedMainMenuItem)
 			{
 			case Game::MainMenuItem::StartGame:
@@ -83,6 +86,7 @@ void Game::HandleInputMainMenu()
 			break;
 
 		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			isRunning = false;
 			break;
 		}
@@ -109,7 +113,8 @@ void Game::UpdateMenu()
 		UpdateColorThemesMenu();
 		break;
 
-	case Game::Menu::MusicAndSounds:
+	case Game::Menu::Audio:
+		UpdateAudioMenu();
 		break;
 
 	case Game::Menu::Credits:
@@ -136,6 +141,7 @@ void Game::HandleInputTutorialMenu()
 		case Input::Key::ArrowLeft:
 			if (currentPage > 0)
 			{
+				audioManager.PlaySound(Audio::ChangeMenuItemSound);
 				currentPage--;
 			}
 			break;
@@ -143,11 +149,13 @@ void Game::HandleInputTutorialMenu()
 		case Input::Key::ArrowRight:
 			if (currentPage < TUTORIAL_PAGES_COUNT - 1)
 			{
+				audioManager.PlaySound(Audio::ChangeMenuItemSound);
 				currentPage++;
 			}
 			break;
 
 		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			currentPage = 0;
 			currentMenu = Menu::Main;
 			break;
@@ -189,7 +197,7 @@ void Game::UpdateMainMenu()
 		foundPosition = mainMenuFileContent.find(L"Exit");
 		break;
 
-	default:		
+	default:
 		throw Exception(L"Variable 'selectedMainMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
 
@@ -215,6 +223,7 @@ void Game::HandleInputCreditsMenu()
 		switch (pressedKey)
 		{
 		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			currentMenu = Menu::Options;
 			break;
 		}
@@ -231,21 +240,24 @@ void Game::HandleInputOptionsMenu()
 		{
 		case Input::Key::ArrowUp:
 			MoveMenuItemUp(selectedOptionsMenuItem, OptionsMenuItem::ColorTheme, OptionsMenuItem::BackToMainMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::ArrowDown:
 			MoveMenuItemDown(selectedOptionsMenuItem, OptionsMenuItem::ColorTheme, OptionsMenuItem::BackToMainMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::Enter:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			switch (selectedOptionsMenuItem)
 			{
 			case Game::OptionsMenuItem::ColorTheme:
 				currentMenu = Menu::ColorThemes;
 				break;
 
-			case Game::OptionsMenuItem::MusicAndSounds:
-				currentMenu = Menu::MusicAndSounds;
+			case Game::OptionsMenuItem::Audio:
+				currentMenu = Menu::Audio;
 				break;
 
 			case Game::OptionsMenuItem::Credits:
@@ -263,6 +275,7 @@ void Game::HandleInputOptionsMenu()
 			break;
 
 		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
 			currentMenu = Menu::Main;
 			break;
@@ -308,8 +321,8 @@ void Game::RenderMenu()
 	case Game::Menu::ColorThemes:
 		std::wcout << colorThemesMenuFileContent;
 		break;
-	case Game::Menu::MusicAndSounds:
-		std::wcout << musicAndSoundsMenuFileContent;
+	case Game::Menu::Audio:
+		std::wcout << audioMenuFileContent;
 		break;
 	case Game::Menu::Credits:
 		std::wcout << creditsMenuFileContent;
@@ -350,7 +363,7 @@ void Game::Initialize()
 	mainMenuFileContent = FileManager::ReadTextFile(mainMenuFileName);
 	optionsMenuFileContent = FileManager::ReadTextFile(optionsMenuFileName);
 	colorThemesMenuFileContent = FileManager::ReadTextFile(colorThemesMenuFileName);
-	musicAndSoundsMenuFileContent = FileManager::ReadTextFile(musicAndSoundsMenuFileName);
+	audioMenuFileContent = FileManager::ReadTextFile(audioMenuFileName);
 	difficultiesMenuFileContent = FileManager::ReadTextFile(difficultiesMenuFileName);
 
 	// Read tutorial:
@@ -366,6 +379,14 @@ void Game::Initialize()
 	ReadColorThemeFromFile();
 	SetColorTheme();
 	SetPlusSignOnColorThemeMenuItem();
+
+	// Set audio settins:
+	audioManager.Initialize();
+	SetPlusSignOnAudioMenuItem();
+	if (audioManager.IsMusicOn())
+	{
+		audioManager.PlayMusic(Audio::BackgroundMenuMusic, true);
+	}
 
 	isRunning = true;
 }
@@ -385,13 +406,16 @@ void Game::HandleInputDifficultiesMenu()
 		{
 		case Input::Key::ArrowUp:
 			MoveMenuItemUp(selectedDifficultiesMenuItem, DifficultiesMenuItem::Easy, DifficultiesMenuItem::BackToMainMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::ArrowDown:
 			MoveMenuItemDown(selectedDifficultiesMenuItem, DifficultiesMenuItem::Easy, DifficultiesMenuItem::BackToMainMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::Enter:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			switch (selectedDifficultiesMenuItem)
 			{
 			case Game::DifficultiesMenuItem::Easy:
@@ -452,6 +476,8 @@ void Game::HandleInput()
 
 void Game::Update()
 {
+	audioManager.Update();
+
 	switch (currentScene)
 	{
 	case Scene::StartScreen:
@@ -463,6 +489,7 @@ void Game::Update()
 		break;
 
 	case Scene::Game:
+		// TODO: Write code
 		break;
 
 	default:
@@ -520,8 +547,8 @@ void Game::UpdateOptionsMenu()
 		foundPosition = optionsMenuFileContent.find(L"Color theme");
 		break;
 
-	case Game::OptionsMenuItem::MusicAndSounds:
-		foundPosition = optionsMenuFileContent.find(L"Music & Sounds");
+	case Game::OptionsMenuItem::Audio:
+		foundPosition = optionsMenuFileContent.find(L"Audio");
 		break;
 
 	case Game::OptionsMenuItem::Credits:
@@ -634,6 +661,10 @@ void Game::UpdateColorThemesMenu()
 		foundPosition = colorThemesMenuFileContent.find(L"Purple  Yellow");
 		break;
 
+	case ColorThemesMenuItem::BackToOptionsMenu:
+		foundPosition = colorThemesMenuFileContent.find(L"Back to options menu");
+		break;
+
 	default:
 		throw Exception(L"Variable 'selectedColorThemesMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
@@ -643,8 +674,16 @@ void Game::UpdateColorThemesMenu()
 		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
 
-	// 2. Descrease its value by 8, because open '[' is on 8 characters left:
-	foundPosition -= 8;
+	if (selectedColorThemesMenuItem == ColorThemesMenuItem::BackToOptionsMenu)
+	{
+		// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+		foundPosition -= 4;
+	}
+	else
+	{
+		// 2. Descrease its value by 8, because open '[' is on 8 characters left:
+		foundPosition -= 8;
+	}
 
 	// 3. Replace two whitespaces (' ') on characters '-' and '>':
 	colorThemesMenuFileContent[foundPosition] = '-';
@@ -745,6 +784,55 @@ void Game::SetPlusSignOnColorThemeMenuItem()
 	colorThemesMenuFileContent[foundPosition] = '+';
 }
 
+void Game::SetPlusSignOnAudioMenuItem()
+{
+	// --- REMOVE '+' SIGN ON PREVIOUS POSITION ---
+	// On music first:
+	size_t foundPosition = audioMenuFileContent.find(L"{+}");
+	if (foundPosition != std::wstring::npos)
+	{
+		audioMenuFileContent[foundPosition + 1] = ' ';
+	}
+	// On sounds second:
+	foundPosition = audioMenuFileContent.rfind(L"{+}");
+	if (foundPosition != std::wstring::npos)
+	{
+		audioMenuFileContent[foundPosition + 1] = ' ';
+	}
+
+	// --- SET '+' SIGN ON NEW POSITION ---
+	// On music first:
+	if (audioManager.IsMusicOn())
+	{
+		foundPosition = audioMenuFileContent.find(L"On");
+	}
+	else
+	{
+		foundPosition = audioMenuFileContent.find(L"Off");
+	}
+	if (foundPosition == std::wstring::npos)
+	{
+		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
+	}
+	foundPosition -= 3;
+	audioMenuFileContent[foundPosition] = '+';
+	// On sounds second:
+	if (audioManager.IsSoundsOn())
+	{
+		foundPosition = audioMenuFileContent.rfind(L"On");
+	}
+	else
+	{
+		foundPosition = audioMenuFileContent.rfind(L"Off");
+	}
+	if (foundPosition == std::wstring::npos)
+	{
+		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
+	}
+	foundPosition -= 3;
+	audioMenuFileContent[foundPosition] = '+';
+}
+
 void Game::HandleInputColorThemesMenu()
 {
 	if (Input::PressKey())
@@ -754,14 +842,17 @@ void Game::HandleInputColorThemesMenu()
 		switch (pressedKey)
 		{
 		case Input::Key::ArrowUp:
-			MoveMenuItemUp(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToMainMenu);
+			MoveMenuItemUp(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToOptionsMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::ArrowDown:
-			MoveMenuItemDown(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToMainMenu);
+			MoveMenuItemDown(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToOptionsMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
 			break;
 
 		case Input::Key::Enter:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			switch (selectedColorThemesMenuItem)
 			{
 			case Game::ColorThemesMenuItem::WhiteBlack:
@@ -792,7 +883,7 @@ void Game::HandleInputColorThemesMenu()
 				SetPlusSignOnColorThemeMenuItem();
 				break;
 
-			case Game::ColorThemesMenuItem::BackToMainMenu:
+			case Game::ColorThemesMenuItem::BackToOptionsMenu:
 				selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
 				currentMenu = Menu::Options;
 				break;
@@ -803,6 +894,7 @@ void Game::HandleInputColorThemesMenu()
 			break;
 
 		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
 			currentMenu = Menu::Options;
 			break;
@@ -821,4 +913,146 @@ void Game::HandleException(const Exception& exc)
 	std::wcout << L"Line:     " << exc.LineNumber() << std::endl;
 
 	Console::WaitForPressKey();
+}
+
+void Game::HandleInputAudioMenu()
+{
+	if (Input::PressKey())
+	{
+		Input::Key pressedKey = Input::GetPressedKey();
+
+		switch (pressedKey)
+		{
+		case Input::Key::ArrowUp:
+			MoveMenuItemUp(selectedAudioMenuItem, AudioMenuItem::MusicOn, AudioMenuItem::BackToOptionsMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
+			break;
+
+		case Input::Key::ArrowDown:
+			MoveMenuItemDown(selectedAudioMenuItem, AudioMenuItem::MusicOn, AudioMenuItem::BackToOptionsMenu);
+			audioManager.PlaySound(Audio::ChangeMenuItemSound);
+			break;
+
+		case Input::Key::Enter:
+			switch (selectedAudioMenuItem)
+			{
+			case Game::AudioMenuItem::MusicOn:
+				if (!audioManager.IsMusicOn())
+				{
+					audioManager.TurnOnMusic();
+					SetPlusSignOnAudioMenuItem();
+					audioManager.WriteAudioSettingsToFile();
+					audioManager.PlayMusic(Audio::BackgroundMenuMusic, true);
+				}
+				break;
+
+			case Game::AudioMenuItem::MusicOff:
+				if (audioManager.IsMusicOn())
+				{
+					audioManager.TurnOffMusic();
+					SetPlusSignOnAudioMenuItem();
+					audioManager.WriteAudioSettingsToFile();
+					audioManager.StopMusic();
+				}
+				break;
+
+			case Game::AudioMenuItem::SoundsOn:
+				if (!audioManager.IsSoundsOn())
+				{
+					audioManager.TurnOnSounds();
+					SetPlusSignOnAudioMenuItem();
+					audioManager.WriteAudioSettingsToFile();
+				}
+				break;
+
+			case Game::AudioMenuItem::SoundsOff:
+				if (audioManager.IsSoundsOn())
+				{
+					audioManager.TurnOffSounds();
+					SetPlusSignOnAudioMenuItem();
+					audioManager.WriteAudioSettingsToFile();
+				}
+				break;
+
+			case Game::AudioMenuItem::BackToOptionsMenu:
+				selectedAudioMenuItem = AudioMenuItem::MusicOn;
+				currentMenu = Menu::Options;
+				break;
+
+			default:
+				throw Exception(L"Variable 'selectedAudioMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
+			}
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
+			break;
+
+		case Input::Key::Escape:
+			audioManager.PlaySound(Audio::SelectMenuItemSound);
+			selectedAudioMenuItem = AudioMenuItem::MusicOn;
+			currentMenu = Menu::Options;
+			break;
+		}
+	}
+}
+
+void Game::UpdateAudioMenu()
+{
+	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
+	size_t arrowPosition = audioMenuFileContent.find(L"->");
+	if (arrowPosition != std::wstring::npos)
+	{
+		audioMenuFileContent[arrowPosition] = ' ';
+		audioMenuFileContent[arrowPosition + 1] = ' ';
+	}
+
+	// --- SET ARROW ON NEW SELECTED ITEM ---
+	// In the menu we need to only set arrow between '[" and ']' brackyes.
+	// So algorithm will be next:
+
+	// 1. Find selected menu item first character position in file content:
+	size_t foundPosition;
+	switch (selectedAudioMenuItem)
+	{
+	case Game::AudioMenuItem::MusicOn:
+		foundPosition = audioMenuFileContent.find(L"On");
+		break;
+
+	case Game::AudioMenuItem::MusicOff:
+		foundPosition = audioMenuFileContent.find(L"Off");
+		break;
+
+	case Game::AudioMenuItem::SoundsOn:
+		foundPosition = audioMenuFileContent.rfind(L"On");
+		break;
+
+	case Game::AudioMenuItem::SoundsOff:
+		foundPosition = audioMenuFileContent.rfind(L"Off");
+		break;
+
+	case Game::AudioMenuItem::BackToOptionsMenu:
+		foundPosition = audioMenuFileContent.find(L"Back to options menu");
+		break;
+
+	default:
+		throw Exception(L"Variable 'selectedAudioMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
+	}
+
+	if (foundPosition == std::wstring::npos)
+	{
+		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
+	}
+
+	if (selectedAudioMenuItem == AudioMenuItem::BackToOptionsMenu)
+	{
+		// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+		foundPosition -= 4;
+	}
+	else
+	{
+		// 2. Descrease its value by 8, because open '[' is on 8 characters left:
+		foundPosition -= 8;
+	}
+
+	// 3. Replace two whitespaces (' ') on characters '-' and '>':
+	audioMenuFileContent[foundPosition] = '-';
+	audioMenuFileContent[foundPosition + 1] = '>';
 }

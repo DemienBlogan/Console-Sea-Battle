@@ -72,15 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)\SourceCode\DirectXTK\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\SourceCode\DirectXTK\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)\SourceCode\DirectXTK\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\SourceCode\DirectXTK\Includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,6 +124,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;DirectXTKAudioWin8.lib;d3d12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Документы\Visual Studio 2022\Projects\Console Sea Battle\SourceCode\DirectXTK\Libraries\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,9 +142,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;DirectXTKAudioWin8.lib;d3d12.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Документы\Visual Studio 2022\Projects\Console Sea Battle\SourceCode\DirectXTK\Libraries\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SourceCode\AudioManager\AudioManager.cpp" />
     <ClCompile Include="SourceCode\Input\Input.cpp" />
     <ClCompile Include="SourceCode\FileManager\FileManager.cpp" />
     <ClCompile Include="SourceCode\Console\Console.cpp" />
@@ -146,6 +155,28 @@
     <ClCompile Include="SourceCode\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SourceCode\AudioManager\AudioManager.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Audio.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\BufferHelpers.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\CommonStates.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\DDSTextureLoader.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\DirectXHelpers.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Effects.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GamePad.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GeometricPrimitive.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\GraphicsMemory.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Keyboard.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Model.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\Mouse.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\PostProcess.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\PrimitiveBatch.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\ScreenGrab.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SimpleMath.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SpriteBatch.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\SpriteFont.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\VertexTypes.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\WICTextureLoader.h" />
+    <ClInclude Include="SourceCode\DirectXTK\Includes\XboxDDSTextureLoader.h" />
     <ClInclude Include="SourceCode\Input\Input.h" />
     <ClInclude Include="SourceCode\FileManager\FileManager.h" />
     <ClInclude Include="SourceCode\Console\Console.h" />
@@ -157,13 +188,27 @@
     <Text Include="Resources\Menus\ConfirmationMenu.txt" />
     <Text Include="Resources\Menus\DifficultiesMenu.txt" />
     <Text Include="Resources\Menus\MainMenu.txt" />
-    <Text Include="Resources\Menus\MusicAndSoundsMenu.txt" />
+    <Text Include="Resources\Menus\AudioMenu.txt" />
     <Text Include="Resources\Menus\OptionsMenu.txt" />
     <Text Include="Resources\Tutorial\TutorialPage1.txt" />
     <Text Include="Resources\StartScreen\CompanyLogo.txt" />
     <Text Include="Resources\StartScreen\GameLogo.txt" />
     <Text Include="Resources\Tutorial\TutorialPage2.txt" />
     <Text Include="Resources\Tutorial\TutorialPage3.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="README.md" />
+    <None Include="Resources\Data\ColorTheme.bin" />
+    <None Include="Resources\Data\AudioSettings.bin" />
+    <None Include="SourceCode\DirectXTK\Includes\SimpleMath.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resources\Audio\BackgroundMenuMusic.wav" />
+    <Media Include="Resources\Audio\ChangeMenuItemSound.wav" />
+    <Media Include="Resources\Audio\SelectMenuItemSound.wav" />
+    <Media Include="Resources\Music\BackgroundMusic.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

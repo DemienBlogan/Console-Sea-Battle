@@ -99,7 +99,7 @@ void Console::SetFont(const std::wstring& fontName, int fontSize)
 
 void Console::SetDimensions(int width, int height)
 {
-	SMALL_RECT windowArea = { 0, 0, width, height };
+	SMALL_RECT windowArea = { 0, 0, static_cast<SHORT>(width), static_cast<SHORT>(height) };
 	static HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleWindowInfo(consoleWindow, true, &windowArea);
 }
