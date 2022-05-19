@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <Audio.h>
 
 #undef PlaySound // I can't name my method 'PlaySound' because file 'Windows.h' already has this macro. So I undef it.
@@ -38,7 +37,7 @@ private:
 	void InitializeDirectXTK();
 
 public:
-	static AudioManager& GetReference();
+	static AudioManager& GetInstance();
 	
 	~AudioManager();
 

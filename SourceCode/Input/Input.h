@@ -5,7 +5,7 @@ class Input
 public:
 	enum class Key
 	{
-		// All numbers is OS Windows's codes of keys:
+		// All numbers is OS Windows codes of keys:
 		Enter = 13,
 		Escape = 27,
 		ArrowUp = 72,

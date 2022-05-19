@@ -1,7 +1,7 @@
 #include "AudioManager.h"
 #include <fstream>
 
-AudioManager& AudioManager::GetReference()
+AudioManager& AudioManager::GetInstance()
 {
 	static AudioManager manager;
 	return manager;

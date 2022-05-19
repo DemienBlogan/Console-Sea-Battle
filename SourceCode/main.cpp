@@ -3,20 +3,13 @@
 int main()
 {
 	Game& game = Game::GetInstance();
+	game.Initialize();
 
-	try
+	while (game.IsRunning())
 	{
-		game.Initialize();
-		while (game.IsRunning())
-		{
-			game.HandleInput();
-			game.Update();
-			game.Render();
-		}
-	}
-	catch (const Game::Exception& exc)
-	{
-		Game::HandleException(exc);
+		game.HandleInput();
+		game.Update();
+		game.Render();
 	}
 
 	return 0;

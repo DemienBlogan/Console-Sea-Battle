@@ -1,11 +1,9 @@
 #include "Console.h"
-#include <cstdlib>
-#include <cstdio>
+#include <iostream>
+#include <Windows.h>
 #include <fcntl.h>
 #include <io.h>
 #include <thread>
-#include <Windows.h>
-#include <iostream>
 
 Console::Color Console::fontColor = Console::Color::White;
 Console::Color Console::backgroundColor = Console::Color::Black;
@@ -15,7 +13,7 @@ void Console::SetConsoleColor()
 	// This method uses 'system' function.
 	// Function 'system' gets c-string.
 	// To change console color, we need to send c-string "Color XX",
-	// where XX is two OCT digits. First is background color, and
+	// where XX is two OCT-digits. First is background color, and
 	// second is text color. So I build c-string first, and then 
 	// invoke 'system' function
 	char colorRepresentation[9] = "Color ";
@@ -29,14 +27,11 @@ void Console::ClearScreen()
 	system("cls");
 }
 
-void Console::WaitForPressKey()
-{
-	system("pause");
-}
-
 void Console::SetUnicodeCodepage()
 {
-	_setmode(_fileno(stdout), _O_U16TEXT);
+	// I don't need to check return value, but I create 'result' to disable
+	// warning of the checking.
+	int result = _setmode(_fileno(stdout), _O_U16TEXT);
 }
 
 void Console::WaitForMilliseconds(int milliseconds)
@@ -46,9 +41,9 @@ void Console::WaitForMilliseconds(int milliseconds)
 
 void Console::HideCursor()
 {
-	static HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cursorInfo;
-	cursorInfo.dwSize = 100; // just some value. 0 won't work.
+	HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursorInfo{};
+	cursorInfo.dwSize = 1; // just some value. 0 won't work.
 	cursorInfo.bVisible = false;
 	SetConsoleCursorInfo(consoleWindow, &cursorInfo);
 }
@@ -85,7 +80,7 @@ void Console::SetTitle(const std::wstring& title)
 
 void Console::SetFont(const std::wstring& fontName, int fontSize)
 {
-	CONSOLE_FONT_INFOEX cfi;
+	CONSOLE_FONT_INFOEX cfi{};
 	cfi.cbSize = sizeof(cfi);
 	cfi.nFont = 0;
 	cfi.dwFontSize.X = 0;
@@ -100,14 +95,14 @@ void Console::SetFont(const std::wstring& fontName, int fontSize)
 void Console::SetDimensions(int width, int height)
 {
 	SMALL_RECT windowArea = { 0, 0, static_cast<SHORT>(width), static_cast<SHORT>(height) };
-	static HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleWindowInfo(consoleWindow, true, &windowArea);
 }
 
 void Console::GetDesktopDimensions(int& width, int& height)
 {
 	RECT desktopRectangle;
-	const HWND desktop = GetDesktopWindow();
+	HWND desktop = GetDesktopWindow();
 	GetWindowRect(desktop, &desktopRectangle);
 	width = desktopRectangle.right;
 	height = desktopRectangle.bottom;
@@ -136,7 +131,7 @@ void Console::SetWindowPositionOnScreenCenter()
 
 void Console::SetCursorPosition(int x, int y)
 {
-	static HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE consoleWindow = GetStdHandle(STD_OUTPUT_HANDLE);
 	std::wcout.flush();
 	COORD newCursorPosition = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
 	SetConsoleCursorPosition(consoleWindow, newCursorPosition);

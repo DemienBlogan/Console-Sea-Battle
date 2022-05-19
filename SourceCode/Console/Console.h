@@ -32,7 +32,6 @@ private:
 
 public:
 	static void ClearScreen();
-	static void WaitForPressKey();
 	static void SetUnicodeCodepage();
 	static void WaitForMilliseconds(int milliseconds);
 	static void HideCursor();

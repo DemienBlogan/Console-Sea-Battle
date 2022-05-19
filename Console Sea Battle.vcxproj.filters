@@ -113,12 +113,17 @@
     <ClInclude Include="SourceCode\DirectXTK\Includes\XboxDDSTextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SourceCode\Game\GameEnumerations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceCode\Debug\Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\StartScreen\CompanyLogo.txt" />
     <Text Include="Resources\StartScreen\GameLogo.txt" />
     <Text Include="Resources\Menus\MainMenu.txt" />
-    <Text Include="Resources\Menus\ConfirmationMenu.txt" />
     <Text Include="Resources\Tutorial\TutorialPage1.txt" />
     <Text Include="Resources\Tutorial\TutorialPage2.txt" />
     <Text Include="Resources\Tutorial\TutorialPage3.txt" />

@@ -1,44 +1,150 @@
 #include "Game.h"
 #include <iostream>
-#include <fstream>
 #include "../Console/Console.h"
 #include "../FileManager/FileManager.h"
 #include "../Input/Input.h"
+#include "../Debug/Debug.h"
 
+Game::~Game()
+{
+	Console::ClearScreen();
+}
+
+void Game::ReadColorThemeFromFile()
+{
+	int colorThemeInteger;
+	bool success = fileManager.ReadIntFromFile(colorThemeInfoFileName, colorThemeInteger);
+	CHECK_EXPRESSION(success);
+	currentColorTheme = ColorTheme(colorThemeInteger);
+}
+
+void Game::SetColorTheme() const
+{
+	CHECK_BOUNDS(currentColorTheme, ColorTheme::WhiteBlack, ColorTheme::PurpleYellow);
+
+	switch (currentColorTheme)
+	{
+	case ColorTheme::WhiteBlack:
+		Console::SetFontColor(Console::Color::White);
+		Console::SetBackgroundColor(Console::Color::Black);
+		break;
+
+	case ColorTheme::BlueAqua:
+		Console::SetFontColor(Console::Color::Blue);
+		Console::SetBackgroundColor(Console::Color::Aqua);
+		break;
+
+	case ColorTheme::BlackWhite:
+		Console::SetFontColor(Console::Color::Black);
+		Console::SetBackgroundColor(Console::Color::White);
+		break;
+
+	case ColorTheme::PurpleYellow:
+		Console::SetFontColor(Console::Color::Purple);
+		Console::SetBackgroundColor(Console::Color::LightYellow);
+		break;
+	}
+}
+
+void Game::SetPlusSignOnColorThemeMenuItem()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::ColorThemes);
+
+	// --- REMOVE '+' SIGN ON PREVIOUS POSITION ---
+	size_t foundPosition = content.find(L"{+}");
+	if (foundPosition != std::wstring::npos)
+	{
+		content[foundPosition + 1] = ' ';
+	}
+
+	// --- SET '+' SIGN ON NEW POSITION ---
+	CHECK_BOUNDS(currentColorTheme, ColorTheme::WhiteBlack, ColorTheme::PurpleYellow);
+	switch (currentColorTheme)
+	{
+	case ColorTheme::WhiteBlack:
+		foundPosition = content.find(L"White   Black");
+		break;
+
+	case ColorTheme::BlueAqua:
+		foundPosition = content.find(L"Blue    Aqua");
+		break;
+
+	case ColorTheme::BlackWhite:
+		foundPosition = content.find(L"Black   White");
+		break;
+
+	case ColorTheme::PurpleYellow:
+		foundPosition = content.find(L"Purple  Yellow");
+		break;
+	}
+
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+
+	foundPosition -= 3;
+	content[foundPosition] = '+';
+}
+
+void Game::SetPlusSignOnAudioMenuItem()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::Audio);
+
+	// --- REMOVE '+' SIGN ON PREVIOUS POSITION ---
+	// On music first:
+	size_t foundPosition = content.find(L"{+}");
+	if (foundPosition != std::wstring::npos)
+		content[foundPosition + 1] = ' ';
+	// On sounds second:
+	foundPosition = content.rfind(L"{+}");
+	if (foundPosition != std::wstring::npos)
+		content[foundPosition + 1] = ' ';
+
+	// --- SET '+' SIGN ON NEW POSITION ---
+	// On music first:
+	foundPosition = content.find(audioManager.IsMusicOn() ? L"On" : L"Off");
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+	foundPosition -= 3;
+	content[foundPosition] = '+';
+	// On sounds second:
+	foundPosition = content.rfind(audioManager.IsSoundsOn() ? L"On" : L"Off");
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+	foundPosition -= 3;
+	content[foundPosition] = '+';
+}
+
+#pragma region HandleInputMethods
 void Game::HandleInputMenu()
 {
+	CHECK_BOUNDS(currentMenu, Menu::Main, Menu::Difficulties);
+
 	switch (currentMenu)
 	{
-	case Game::Menu::Main:
+	case Menu::Main:
 		HandleInputMainMenu();
 		break;
 
-	case Game::Menu::Options:
+	case Menu::Options:
 		HandleInputOptionsMenu();
 		break;
 
-	case Game::Menu::Tutorial:
+	case Menu::Tutorial:
 		HandleInputTutorialMenu();
 		break;
 
-	case Game::Menu::ColorThemes:
+	case Menu::ColorThemes:
 		HandleInputColorThemesMenu();
 		break;
 
-	case Game::Menu::Audio:
+	case Menu::Audio:
 		HandleInputAudioMenu();
 		break;
 
-	case Game::Menu::Credits:
+	case Menu::Credits:
 		HandleInputCreditsMenu();
 		break;
 
-	case Game::Menu::Difficulties:
+	case Menu::Difficulties:
 		HandleInputDifficultiesMenu();
 		break;
-
-	default:
-		throw Exception(L"Variable 'currentMenu' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
 }
 
@@ -62,26 +168,26 @@ void Game::HandleInputMainMenu()
 
 		case Input::Key::Enter:
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
+
+			CHECK_BOUNDS(selectedMainMenuItem, MainMenuItem::StartGame, MainMenuItem::Exit);
+
 			switch (selectedMainMenuItem)
 			{
-			case Game::MainMenuItem::StartGame:
+			case MainMenuItem::StartGame:
 				currentMenu = Menu::Difficulties;
 				break;
 
-			case Game::MainMenuItem::Options:
+			case MainMenuItem::Options:
 				currentMenu = Menu::Options;
 				break;
 
-			case Game::MainMenuItem::Tutorial:
+			case MainMenuItem::Tutorial:
 				currentMenu = Menu::Tutorial;
 				break;
 
-			case Game::MainMenuItem::Exit:
+			case MainMenuItem::Exit:
 				isRunning = false;
 				break;
-
-			default:
-				throw Exception(L"Variable 'selectedMainMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 			}
 			break;
 
@@ -90,43 +196,6 @@ void Game::HandleInputMainMenu()
 			isRunning = false;
 			break;
 		}
-	}
-}
-
-void Game::UpdateMenu()
-{
-	switch (currentMenu)
-	{
-	case Game::Menu::Main:
-		UpdateMainMenu();
-		break;
-
-	case Game::Menu::Options:
-		UpdateOptionsMenu();
-		break;
-
-	case Game::Menu::Tutorial:
-		// No code
-		break;
-
-	case Game::Menu::ColorThemes:
-		UpdateColorThemesMenu();
-		break;
-
-	case Game::Menu::Audio:
-		UpdateAudioMenu();
-		break;
-
-	case Game::Menu::Credits:
-		// No code
-		break;
-
-	case Game::Menu::Difficulties:
-		UpdateDifficultiesMenu();
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentMenu' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
 }
 
@@ -139,79 +208,28 @@ void Game::HandleInputTutorialMenu()
 		switch (pressedKey)
 		{
 		case Input::Key::ArrowLeft:
-			if (currentPage > 0)
+			if (currentTutorialPage > 0)
 			{
 				audioManager.PlaySound(Audio::ChangeMenuItemSound);
-				currentPage--;
+				currentTutorialPage--;
 			}
 			break;
 
 		case Input::Key::ArrowRight:
-			if (currentPage < TUTORIAL_PAGES_COUNT - 1)
+			if (currentTutorialPage < TUTORIAL_PAGES_COUNT - 1)
 			{
 				audioManager.PlaySound(Audio::ChangeMenuItemSound);
-				currentPage++;
+				currentTutorialPage++;
 			}
 			break;
 
 		case Input::Key::Escape:
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
-			currentPage = 0;
+			currentTutorialPage = 0;
 			currentMenu = Menu::Main;
 			break;
 		}
 	}
-}
-
-void Game::UpdateMainMenu()
-{
-	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
-	size_t arrowPosition = mainMenuFileContent.find(L"->");
-	if (arrowPosition != std::wstring::npos)
-	{
-		mainMenuFileContent[arrowPosition] = ' ';
-		mainMenuFileContent[arrowPosition + 1] = ' ';
-	}
-
-	// --- SET ARROW ON NEW SELECTED ITEM ---
-	// In the menu we need to only set arrow between '[" and ']' brackyes.
-	// So algorithm will be next:
-
-	// 1. Find selected menu item first character position in file content:
-	size_t foundPosition;
-	switch (selectedMainMenuItem)
-	{
-	case Game::MainMenuItem::StartGame:
-		foundPosition = mainMenuFileContent.find(L"Start Game");
-		break;
-
-	case Game::MainMenuItem::Options:
-		foundPosition = mainMenuFileContent.find(L"Options");
-		break;
-
-	case Game::MainMenuItem::Tutorial:
-		foundPosition = mainMenuFileContent.find(L"Tutorial");
-		break;
-
-	case Game::MainMenuItem::Exit:
-		foundPosition = mainMenuFileContent.find(L"Exit");
-		break;
-
-	default:
-		throw Exception(L"Variable 'selectedMainMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
-	foundPosition -= 4;
-
-	// 3. Replace two whitespaces (' ') on characters '-' and '>':
-	mainMenuFileContent[foundPosition] = '-';
-	mainMenuFileContent[foundPosition + 1] = '>';
 }
 
 void Game::HandleInputCreditsMenu()
@@ -250,27 +268,27 @@ void Game::HandleInputOptionsMenu()
 
 		case Input::Key::Enter:
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
+
+			CHECK_BOUNDS(selectedOptionsMenuItem, OptionsMenuItem::ColorTheme, OptionsMenuItem::BackToMainMenu);
+
 			switch (selectedOptionsMenuItem)
 			{
-			case Game::OptionsMenuItem::ColorTheme:
+			case OptionsMenuItem::ColorTheme:
 				currentMenu = Menu::ColorThemes;
 				break;
 
-			case Game::OptionsMenuItem::Audio:
+			case OptionsMenuItem::Audio:
 				currentMenu = Menu::Audio;
 				break;
 
-			case Game::OptionsMenuItem::Credits:
+			case OptionsMenuItem::Credits:
 				currentMenu = Menu::Credits;
 				break;
 
-			case Game::OptionsMenuItem::BackToMainMenu:
+			case OptionsMenuItem::BackToMainMenu:
 				selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
 				currentMenu = Menu::Main;
 				break;
-
-			default:
-				throw Exception(L"Variable 'selectedOptionsMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 			}
 			break;
 
@@ -281,119 +299,6 @@ void Game::HandleInputOptionsMenu()
 			break;
 		}
 	}
-}
-
-Game::~Game()
-{
-	Console::ClearScreen();
-}
-
-void Game::RenderLogo(const std::wstring& logoContent)
-{
-	size_t companyLogoFileContentLength = logoContent.length();
-	for (size_t i = 0; i < companyLogoFileContentLength; i++)
-	{
-		std::wcout << logoContent[i];
-
-		if (logoContent[i] == '\n')
-		{
-			Console::WaitForMilliseconds(50);
-		}
-	}
-
-	Console::WaitForMilliseconds(2000);
-	Console::ClearScreen();
-}
-
-void Game::RenderMenu()
-{
-	switch (currentMenu)
-	{
-	case Game::Menu::Main:
-		std::wcout << mainMenuFileContent;
-		break;
-	case Game::Menu::Options:
-		std::wcout << optionsMenuFileContent;
-		break;
-	case Game::Menu::Tutorial:
-		std::wcout << tutorialPagesFileContent[currentPage];
-		break;
-	case Game::Menu::ColorThemes:
-		std::wcout << colorThemesMenuFileContent;
-		break;
-	case Game::Menu::Audio:
-		std::wcout << audioMenuFileContent;
-		break;
-	case Game::Menu::Credits:
-		std::wcout << creditsMenuFileContent;
-		break;
-	case Game::Menu::Difficulties:
-		std::wcout << difficultiesMenuFileContent;
-		break;
-	default:
-		throw Exception(L"Variable 'currentMenu' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	Console::ResetCursorPosition();
-}
-
-Game& Game::GetInstance()
-{
-	static Game game;
-	return game;
-}
-
-void Game::Initialize()
-{
-	// Set console properties:
-	Console::SetUnicodeCodepage();
-	Console::SetDimensions(windowWidth, windowHeight);
-	Console::HideCursor();
-	Console::DisableMaximizeButton();
-	Console::DisableScrollBars();
-	Console::SetTitle(title);
-	Console::SetFont(gameFontName, gameFontSize);
-	Console::SetWindowPositionOnScreenCenter();
-
-	// Read logos:
-	companyLogoFileContent = FileManager::ReadTextFile(companyLogoFileName);
-	gameLogoFileContent = FileManager::ReadTextFile(gameLogoFileName);
-
-	// Read menus:
-	mainMenuFileContent = FileManager::ReadTextFile(mainMenuFileName);
-	optionsMenuFileContent = FileManager::ReadTextFile(optionsMenuFileName);
-	colorThemesMenuFileContent = FileManager::ReadTextFile(colorThemesMenuFileName);
-	audioMenuFileContent = FileManager::ReadTextFile(audioMenuFileName);
-	difficultiesMenuFileContent = FileManager::ReadTextFile(difficultiesMenuFileName);
-
-	// Read tutorial:
-	for (int i = 0; i < TUTORIAL_PAGES_COUNT; i++)
-	{
-		tutorialPagesFileContent[i] = FileManager::ReadTextFile(tutorialPagesFileNames[i]);
-	}
-
-	// Read credits:
-	creditsMenuFileContent = FileManager::ReadTextFile(creditsMenuFileName);
-
-	// Set color theme:
-	ReadColorThemeFromFile();
-	SetColorTheme();
-	SetPlusSignOnColorThemeMenuItem();
-
-	// Set audio settins:
-	audioManager.Initialize();
-	SetPlusSignOnAudioMenuItem();
-	if (audioManager.IsMusicOn())
-	{
-		audioManager.PlayMusic(Audio::BackgroundMenuMusic, true);
-	}
-
-	isRunning = true;
-}
-
-bool Game::IsRunning() const
-{
-	return isRunning;
 }
 
 void Game::HandleInputDifficultiesMenu()
@@ -416,31 +321,34 @@ void Game::HandleInputDifficultiesMenu()
 
 		case Input::Key::Enter:
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
+
+			CHECK_BOUNDS(selectedDifficultiesMenuItem, DifficultiesMenuItem::Easy, DifficultiesMenuItem::BackToMainMenu);
+
 			switch (selectedDifficultiesMenuItem)
 			{
-			case Game::DifficultiesMenuItem::Easy:
+			case DifficultiesMenuItem::Easy:
+				selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
 				difficulty = Difficulty::Easy;
-				// TODO: Start the game
+				currentScene = Scene::Game;
 				break;
 
-			case Game::DifficultiesMenuItem::Normal:
+			case DifficultiesMenuItem::Normal:
+				selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
 				difficulty = Difficulty::Normal;
-				// TODO: Start the game
+				currentScene = Scene::Game;
 				break;
 
-			case Game::DifficultiesMenuItem::Hard:
+			case DifficultiesMenuItem::Hard:
+				selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
 				difficulty = Difficulty::Hard;
-				// TODO: Start the game
+				currentScene = Scene::Game;
 				break;
 
-			case Game::DifficultiesMenuItem::BackToMainMenu:
+			case DifficultiesMenuItem::BackToMainMenu:
 				difficulty = Difficulty::None;
-				selectedDifficultiesMenuItem = Game::DifficultiesMenuItem::Easy;
+				selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
 				currentMenu = Menu::Main;
 				break;
-
-			default:
-				throw Exception(L"Variable 'selectedDifficultiesMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 			}
 			break;
 
@@ -451,386 +359,6 @@ void Game::HandleInputDifficultiesMenu()
 			break;
 		}
 	}
-}
-
-void Game::HandleInput()
-{
-	switch (currentScene)
-	{
-	case Game::Scene::StartScreen:
-		// No code
-		break;
-
-	case Game::Scene::Menu:
-		HandleInputMenu();
-		break;
-
-	case Game::Scene::Game:
-		// TODO: Write code
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentScene' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-}
-
-void Game::Update()
-{
-	audioManager.Update();
-
-	switch (currentScene)
-	{
-	case Scene::StartScreen:
-		// No code
-		break;
-
-	case Scene::Menu:
-		UpdateMenu();
-		break;
-
-	case Scene::Game:
-		// TODO: Write code
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentScene' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-}
-
-void Game::Render()
-{
-	switch (currentScene)
-	{
-	case Game::Scene::StartScreen:
-		RenderLogo(companyLogoFileContent);
-		RenderLogo(gameLogoFileContent);
-
-		// After rendering logos we don't need them anymore:
-		companyLogoFileContent.clear();
-		gameLogoFileContent.clear();
-
-		currentScene = Scene::Menu;
-		break;
-
-	case Game::Scene::Menu:
-		RenderMenu();
-		break;
-
-	case Game::Scene::Game:
-		// TODO: Write code
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentScene' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-}
-
-void Game::UpdateOptionsMenu()
-{
-	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
-	size_t arrowPosition = optionsMenuFileContent.find(L"->");
-	if (arrowPosition != std::wstring::npos)
-	{
-		optionsMenuFileContent[arrowPosition] = ' ';
-		optionsMenuFileContent[arrowPosition + 1] = ' ';
-	}
-
-	// --- SET ARROW ON NEW SELECTED ITEM ---
-	// In the menu we need to only set arrow between '[" and ']' brackyes.
-	// So algorithm will be next:
-
-	// 1. Find selected menu item first character position in file content:
-	size_t foundPosition;
-	switch (selectedOptionsMenuItem)
-	{
-	case Game::OptionsMenuItem::ColorTheme:
-		foundPosition = optionsMenuFileContent.find(L"Color theme");
-		break;
-
-	case Game::OptionsMenuItem::Audio:
-		foundPosition = optionsMenuFileContent.find(L"Audio");
-		break;
-
-	case Game::OptionsMenuItem::Credits:
-		foundPosition = optionsMenuFileContent.find(L"Credits");
-		break;
-
-	case Game::OptionsMenuItem::BackToMainMenu:
-		foundPosition = optionsMenuFileContent.find(L"Back to main menu");
-		break;
-
-	default:
-		throw Exception(L"Variable 'selectedOptionsMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
-	foundPosition -= 4;
-
-	// 3. Replace two whitespaces (' ') on characters '-' and '>':
-	optionsMenuFileContent[foundPosition] = '-';
-	optionsMenuFileContent[foundPosition + 1] = '>';
-}
-
-void Game::UpdateDifficultiesMenu()
-{
-	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
-	size_t arrowPosition = difficultiesMenuFileContent.find(L"->");
-	if (arrowPosition != std::wstring::npos)
-	{
-		difficultiesMenuFileContent[arrowPosition] = ' ';
-		difficultiesMenuFileContent[arrowPosition + 1] = ' ';
-	}
-
-	// --- SET ARROW ON NEW SELECTED ITEM ---
-	// In the menu we need to only set arrow between '[" and ']' brackyes.
-	// So algorithm will be next:
-
-	// 1. Find selected menu item first character position in file content:
-	size_t foundPosition;
-	switch (selectedDifficultiesMenuItem)
-	{
-	case DifficultiesMenuItem::Easy:
-		foundPosition = difficultiesMenuFileContent.find(L"Easy");
-		break;
-
-	case DifficultiesMenuItem::Normal:
-		foundPosition = difficultiesMenuFileContent.find(L"Normal");
-		break;
-
-	case DifficultiesMenuItem::Hard:
-		foundPosition = difficultiesMenuFileContent.find(L"Hard");
-		break;
-
-	case DifficultiesMenuItem::BackToMainMenu:
-		foundPosition = difficultiesMenuFileContent.find(L"Back to main menu");
-		break;
-
-	default:
-		throw Exception(L"Variable 'selectedDifficultiesMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
-	foundPosition -= 4;
-
-	// 3. Replace two whitespaces (' ') on characters '-' and '>':
-	difficultiesMenuFileContent[foundPosition] = '-';
-	difficultiesMenuFileContent[foundPosition + 1] = '>';
-}
-
-void Game::UpdateColorThemesMenu()
-{
-	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
-	size_t arrowPosition = colorThemesMenuFileContent.find(L"->");
-	if (arrowPosition != std::wstring::npos)
-	{
-		colorThemesMenuFileContent[arrowPosition] = ' ';
-		colorThemesMenuFileContent[arrowPosition + 1] = ' ';
-	}
-
-	// --- SET ARROW ON NEW SELECTED ITEM ---
-	// In the menu we need to only set arrow between '[" and ']' brackyes.
-	// So algorithm will be next:
-
-	// 1. Find selected menu item first character position in file content:
-	size_t foundPosition;
-	switch (selectedColorThemesMenuItem)
-	{
-	case ColorThemesMenuItem::WhiteBlack:
-		foundPosition = colorThemesMenuFileContent.find(L"White   Black");
-		break;
-
-	case ColorThemesMenuItem::BlueAqua:
-		foundPosition = colorThemesMenuFileContent.find(L"Blue    Aqua");
-		break;
-
-	case ColorThemesMenuItem::BlackWhite:
-		foundPosition = colorThemesMenuFileContent.find(L"Black   White");
-		break;
-
-	case ColorThemesMenuItem::PurpleYellow:
-		foundPosition = colorThemesMenuFileContent.find(L"Purple  Yellow");
-		break;
-
-	case ColorThemesMenuItem::BackToOptionsMenu:
-		foundPosition = colorThemesMenuFileContent.find(L"Back to options menu");
-		break;
-
-	default:
-		throw Exception(L"Variable 'selectedColorThemesMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (selectedColorThemesMenuItem == ColorThemesMenuItem::BackToOptionsMenu)
-	{
-		// 2. Descrease its value by 4, because open '[' is on 4 characters left:
-		foundPosition -= 4;
-	}
-	else
-	{
-		// 2. Descrease its value by 8, because open '[' is on 8 characters left:
-		foundPosition -= 8;
-	}
-
-	// 3. Replace two whitespaces (' ') on characters '-' and '>':
-	colorThemesMenuFileContent[foundPosition] = '-';
-	colorThemesMenuFileContent[foundPosition + 1] = '>';
-}
-
-void Game::ReadColorThemeFromFile()
-{
-	std::wifstream fileStream(colorThemeInfoFileName);
-
-	if (!fileStream.is_open())
-	{
-		WriteColorThemeToFile();
-		return;
-	}
-
-	int colorThemeInteger;
-	fileStream >> colorThemeInteger;
-	currentColorTheme = static_cast<ColorTheme>(colorThemeInteger);
-
-	fileStream.close();
-}
-
-void Game::WriteColorThemeToFile() const
-{
-	std::wofstream fileStream(colorThemeInfoFileName);
-	fileStream << static_cast<int>(currentColorTheme);
-	fileStream.close();
-}
-
-void Game::SetColorTheme() const
-{
-	switch (currentColorTheme)
-	{
-	case Game::ColorTheme::WhiteBlack:
-		Console::SetFontColor(Console::Color::White);
-		Console::SetBackgroundColor(Console::Color::Black);
-		break;
-
-	case Game::ColorTheme::BlueAqua:
-		Console::SetFontColor(Console::Color::Blue);
-		Console::SetBackgroundColor(Console::Color::Aqua);
-		break;
-
-	case Game::ColorTheme::BlackWhite:
-		Console::SetFontColor(Console::Color::Black);
-		Console::SetBackgroundColor(Console::Color::White);
-		break;
-
-	case Game::ColorTheme::PurpleYellow:
-		Console::SetFontColor(Console::Color::Purple);
-		Console::SetBackgroundColor(Console::Color::LightYellow);
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentColorTheme' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-}
-
-void Game::SetPlusSignOnColorThemeMenuItem()
-{
-	// --- REMOVE '+' SIGN ON PREVIOUS POSITION ---
-	size_t foundPosition = colorThemesMenuFileContent.find(L"{+}");
-	if (foundPosition != std::wstring::npos)
-	{
-		colorThemesMenuFileContent[foundPosition + 1] = ' ';
-	}
-
-	// --- SET '+' SIGN ON NEW POSITION ---
-	switch (currentColorTheme)
-	{
-	case ColorTheme::WhiteBlack:
-		foundPosition = colorThemesMenuFileContent.find(L"White   Black");
-		break;
-
-	case ColorTheme::BlueAqua:
-		foundPosition = colorThemesMenuFileContent.find(L"Blue    Aqua");
-		break;
-
-	case ColorTheme::BlackWhite:
-		foundPosition = colorThemesMenuFileContent.find(L"Black   White");
-		break;
-
-	case ColorTheme::PurpleYellow:
-		foundPosition = colorThemesMenuFileContent.find(L"Purple  Yellow");
-		break;
-
-	default:
-		throw Exception(L"Variable 'currentColorTheme' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-
-	foundPosition -= 3;
-	colorThemesMenuFileContent[foundPosition] = '+';
-}
-
-void Game::SetPlusSignOnAudioMenuItem()
-{
-	// --- REMOVE '+' SIGN ON PREVIOUS POSITION ---
-	// On music first:
-	size_t foundPosition = audioMenuFileContent.find(L"{+}");
-	if (foundPosition != std::wstring::npos)
-	{
-		audioMenuFileContent[foundPosition + 1] = ' ';
-	}
-	// On sounds second:
-	foundPosition = audioMenuFileContent.rfind(L"{+}");
-	if (foundPosition != std::wstring::npos)
-	{
-		audioMenuFileContent[foundPosition + 1] = ' ';
-	}
-
-	// --- SET '+' SIGN ON NEW POSITION ---
-	// On music first:
-	if (audioManager.IsMusicOn())
-	{
-		foundPosition = audioMenuFileContent.find(L"On");
-	}
-	else
-	{
-		foundPosition = audioMenuFileContent.find(L"Off");
-	}
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-	foundPosition -= 3;
-	audioMenuFileContent[foundPosition] = '+';
-	// On sounds second:
-	if (audioManager.IsSoundsOn())
-	{
-		foundPosition = audioMenuFileContent.rfind(L"On");
-	}
-	else
-	{
-		foundPosition = audioMenuFileContent.rfind(L"Off");
-	}
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
-	foundPosition -= 3;
-	audioMenuFileContent[foundPosition] = '+';
 }
 
 void Game::HandleInputColorThemesMenu()
@@ -853,43 +381,43 @@ void Game::HandleInputColorThemesMenu()
 
 		case Input::Key::Enter:
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
+
+			CHECK_BOUNDS(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToOptionsMenu);
+
 			switch (selectedColorThemesMenuItem)
 			{
-			case Game::ColorThemesMenuItem::WhiteBlack:
+			case ColorThemesMenuItem::WhiteBlack:
 				currentColorTheme = ColorTheme::WhiteBlack;
 				SetColorTheme();
-				WriteColorThemeToFile();
+				fileManager.WriteIntToFile(colorThemeInfoFileName, int(currentColorTheme));
 				SetPlusSignOnColorThemeMenuItem();
 				break;
 
-			case Game::ColorThemesMenuItem::BlueAqua:
+			case ColorThemesMenuItem::BlueAqua:
 				currentColorTheme = ColorTheme::BlueAqua;
 				SetColorTheme();
-				WriteColorThemeToFile();
+				fileManager.WriteIntToFile(colorThemeInfoFileName, int(currentColorTheme));
 				SetPlusSignOnColorThemeMenuItem();
 				break;
 
-			case Game::ColorThemesMenuItem::BlackWhite:
+			case ColorThemesMenuItem::BlackWhite:
 				currentColorTheme = ColorTheme::BlackWhite;
 				SetColorTheme();
-				WriteColorThemeToFile();
+				fileManager.WriteIntToFile(colorThemeInfoFileName, int(currentColorTheme));
 				SetPlusSignOnColorThemeMenuItem();
 				break;
 
-			case Game::ColorThemesMenuItem::PurpleYellow:
+			case ColorThemesMenuItem::PurpleYellow:
 				currentColorTheme = ColorTheme::PurpleYellow;
 				SetColorTheme();
-				WriteColorThemeToFile();
+				fileManager.WriteIntToFile(colorThemeInfoFileName, int(currentColorTheme));
 				SetPlusSignOnColorThemeMenuItem();
 				break;
 
-			case Game::ColorThemesMenuItem::BackToOptionsMenu:
+			case ColorThemesMenuItem::BackToOptionsMenu:
 				selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
 				currentMenu = Menu::Options;
 				break;
-
-			default:
-				throw Exception(L"Variable 'selectedColorThemesMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 			}
 			break;
 
@@ -900,19 +428,6 @@ void Game::HandleInputColorThemesMenu()
 			break;
 		}
 	}
-}
-
-void Game::HandleException(const Exception& exc)
-{
-	Console::ClearScreen();
-
-	std::wcout << L"ERROR!\n";
-	std::wcout << L"Message:  " << exc.Message() << std::endl;
-	std::wcout << L"File:     " << exc.FileName() << std::endl;
-	std::wcout << L"Function: " << exc.FunctionName() << std::endl;
-	std::wcout << L"Line:     " << exc.LineNumber() << std::endl;
-
-	Console::WaitForPressKey();
 }
 
 void Game::HandleInputAudioMenu()
@@ -934,9 +449,11 @@ void Game::HandleInputAudioMenu()
 			break;
 
 		case Input::Key::Enter:
+			CHECK_BOUNDS(selectedAudioMenuItem, AudioMenuItem::MusicOn, AudioMenuItem::BackToOptionsMenu);
+
 			switch (selectedAudioMenuItem)
 			{
-			case Game::AudioMenuItem::MusicOn:
+			case AudioMenuItem::MusicOn:
 				if (!audioManager.IsMusicOn())
 				{
 					audioManager.TurnOnMusic();
@@ -946,7 +463,7 @@ void Game::HandleInputAudioMenu()
 				}
 				break;
 
-			case Game::AudioMenuItem::MusicOff:
+			case AudioMenuItem::MusicOff:
 				if (audioManager.IsMusicOn())
 				{
 					audioManager.TurnOffMusic();
@@ -956,7 +473,7 @@ void Game::HandleInputAudioMenu()
 				}
 				break;
 
-			case Game::AudioMenuItem::SoundsOn:
+			case AudioMenuItem::SoundsOn:
 				if (!audioManager.IsSoundsOn())
 				{
 					audioManager.TurnOnSounds();
@@ -965,7 +482,7 @@ void Game::HandleInputAudioMenu()
 				}
 				break;
 
-			case Game::AudioMenuItem::SoundsOff:
+			case AudioMenuItem::SoundsOff:
 				if (audioManager.IsSoundsOn())
 				{
 					audioManager.TurnOffSounds();
@@ -974,13 +491,10 @@ void Game::HandleInputAudioMenu()
 				}
 				break;
 
-			case Game::AudioMenuItem::BackToOptionsMenu:
+			case AudioMenuItem::BackToOptionsMenu:
 				selectedAudioMenuItem = AudioMenuItem::MusicOn;
 				currentMenu = Menu::Options;
 				break;
-
-			default:
-				throw Exception(L"Variable 'selectedAudioMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 			}
 			audioManager.PlaySound(Audio::SelectMenuItemSound);
 			break;
@@ -994,14 +508,51 @@ void Game::HandleInputAudioMenu()
 	}
 }
 
-void Game::UpdateAudioMenu()
+void Game::HandleInputGame()
 {
+	// TODO: Write code
+}
+#pragma endregion
+
+#pragma region UpdateMethods
+void Game::UpdateMenu()
+{
+	CHECK_BOUNDS(currentMenu, Menu::Main, Menu::Difficulties);
+
+	switch (currentMenu)
+	{
+	case Menu::Main:
+		UpdateMainMenu();
+		break;
+
+	case Menu::Options:
+		UpdateOptionsMenu();
+		break;
+
+	case Menu::ColorThemes:
+		UpdateColorThemesMenu();
+		break;
+
+	case Menu::Audio:
+		UpdateAudioMenu();
+		break;
+
+	case Menu::Difficulties:
+		UpdateDifficultiesMenu();
+		break;
+	}
+}
+
+void Game::UpdateMainMenu()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::Main);
+
 	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
-	size_t arrowPosition = audioMenuFileContent.find(L"->");
+	size_t arrowPosition = content.find(L"->");
 	if (arrowPosition != std::wstring::npos)
 	{
-		audioMenuFileContent[arrowPosition] = ' ';
-		audioMenuFileContent[arrowPosition + 1] = ' ';
+		content[arrowPosition] = ' ';
+		content[arrowPosition + 1] = ' ';
 	}
 
 	// --- SET ARROW ON NEW SELECTED ITEM ---
@@ -1009,37 +560,246 @@ void Game::UpdateAudioMenu()
 	// So algorithm will be next:
 
 	// 1. Find selected menu item first character position in file content:
-	size_t foundPosition;
+	size_t foundPosition = std::wstring::npos;
+
+	CHECK_BOUNDS(selectedMainMenuItem, MainMenuItem::StartGame, MainMenuItem::Exit);
+
+	switch (selectedMainMenuItem)
+	{
+	case MainMenuItem::StartGame:
+		foundPosition = content.find(L"Start Game");
+		break;
+
+	case MainMenuItem::Options:
+		foundPosition = content.find(L"Options");
+		break;
+
+	case MainMenuItem::Tutorial:
+		foundPosition = content.find(L"Tutorial");
+		break;
+
+	case MainMenuItem::Exit:
+		foundPosition = content.find(L"Exit");
+		break;
+	}
+
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+
+	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+	foundPosition -= 4;
+
+	// 3. Replace two whitespaces (' ') on characters '-' and '>':
+	content[foundPosition] = '-';
+	content[foundPosition + 1] = '>';
+}
+
+void Game::UpdateOptionsMenu()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::Options);
+
+	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
+	size_t arrowPosition = content.find(L"->");
+	if (arrowPosition != std::wstring::npos)
+	{
+		content[arrowPosition] = ' ';
+		content[arrowPosition + 1] = ' ';
+	}
+
+	// --- SET ARROW ON NEW SELECTED ITEM ---
+	// In the menu we need to only set arrow between '[" and ']' brackyes.
+	// So algorithm will be next:
+
+	// 1. Find selected menu item first character position in file content:
+	size_t foundPosition = std::wstring::npos;
+
+	CHECK_BOUNDS(selectedOptionsMenuItem, OptionsMenuItem::ColorTheme, OptionsMenuItem::BackToMainMenu);
+
+	switch (selectedOptionsMenuItem)
+	{
+	case OptionsMenuItem::ColorTheme:
+		foundPosition = content.find(L"Color theme");
+		break;
+
+	case OptionsMenuItem::Audio:
+		foundPosition = content.find(L"Audio");
+		break;
+
+	case OptionsMenuItem::Credits:
+		foundPosition = content.find(L"Credits");
+		break;
+
+	case OptionsMenuItem::BackToMainMenu:
+		foundPosition = content.find(L"Back to main menu");
+		break;
+	}
+
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+
+	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+	foundPosition -= 4;
+
+	// 3. Replace two whitespaces (' ') on characters '-' and '>':
+	content[foundPosition] = '-';
+	content[foundPosition + 1] = '>';
+}
+
+void Game::UpdateDifficultiesMenu()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::Difficulties);
+
+	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
+	size_t arrowPosition = content.find(L"->");
+	if (arrowPosition != std::wstring::npos)
+	{
+		content[arrowPosition] = ' ';
+		content[arrowPosition + 1] = ' ';
+	}
+
+	// --- SET ARROW ON NEW SELECTED ITEM ---
+	// In the menu we need to only set arrow between '[" and ']' brackyes.
+	// So algorithm will be next:
+
+	// 1. Find selected menu item first character position in file content:
+	size_t foundPosition = std::wstring::npos;
+
+	CHECK_BOUNDS(selectedDifficultiesMenuItem, DifficultiesMenuItem::Easy, DifficultiesMenuItem::BackToMainMenu);
+
+	switch (selectedDifficultiesMenuItem)
+	{
+	case DifficultiesMenuItem::Easy:
+		foundPosition = content.find(L"Easy");
+		break;
+
+	case DifficultiesMenuItem::Normal:
+		foundPosition = content.find(L"Normal");
+		break;
+
+	case DifficultiesMenuItem::Hard:
+		foundPosition = content.find(L"Hard");
+		break;
+
+	case DifficultiesMenuItem::BackToMainMenu:
+		foundPosition = content.find(L"Back to main menu");
+		break;
+	}
+
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+
+	// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+	foundPosition -= 4;
+
+	// 3. Replace two whitespaces (' ') on characters '-' and '>':
+	content[foundPosition] = '-';
+	content[foundPosition + 1] = '>';
+}
+
+void Game::UpdateColorThemesMenu()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::ColorThemes);
+
+	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
+	size_t arrowPosition = content.find(L"->");
+	if (arrowPosition != std::wstring::npos)
+	{
+		content[arrowPosition] = ' ';
+		content[arrowPosition + 1] = ' ';
+	}
+
+	// --- SET ARROW ON NEW SELECTED ITEM ---
+	// In the menu we need to only set arrow between '[" and ']' brackyes.
+	// So algorithm will be next:
+
+	// 1. Find selected menu item first character position in file content:
+	size_t foundPosition = std::wstring::npos;
+
+	CHECK_BOUNDS(selectedColorThemesMenuItem, ColorThemesMenuItem::WhiteBlack, ColorThemesMenuItem::BackToOptionsMenu);
+
+	switch (selectedColorThemesMenuItem)
+	{
+	case ColorThemesMenuItem::WhiteBlack:
+		foundPosition = content.find(L"White   Black");
+		break;
+
+	case ColorThemesMenuItem::BlueAqua:
+		foundPosition = content.find(L"Blue    Aqua");
+		break;
+
+	case ColorThemesMenuItem::BlackWhite:
+		foundPosition = content.find(L"Black   White");
+		break;
+
+	case ColorThemesMenuItem::PurpleYellow:
+		foundPosition = content.find(L"Purple  Yellow");
+		break;
+
+	case ColorThemesMenuItem::BackToOptionsMenu:
+		foundPosition = content.find(L"Back to options menu");
+		break;
+	}
+
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
+
+	if (selectedColorThemesMenuItem == ColorThemesMenuItem::BackToOptionsMenu)
+	{
+		// 2. Descrease its value by 4, because open '[' is on 4 characters left:
+		foundPosition -= 4;
+	}
+	else
+	{
+		// 2. Descrease its value by 8, because open '[' is on 8 characters left:
+		foundPosition -= 8;
+	}
+
+	// 3. Replace two whitespaces (' ') on characters '-' and '>':
+	content[foundPosition] = '-';
+	content[foundPosition + 1] = '>';
+}
+
+void Game::UpdateAudioMenu()
+{
+	std::wstring& content = fileManager.GetMenuContent(Menu::Audio);
+
+	// --- REMOVING ARROW FROM PREVIOUS SELECTED ITEM ---
+	size_t arrowPosition = content.find(L"->");
+	if (arrowPosition != std::wstring::npos)
+	{
+		content[arrowPosition] = ' ';
+		content[arrowPosition + 1] = ' ';
+	}
+
+	// --- SET ARROW ON NEW SELECTED ITEM ---
+	// In the menu we need to only set arrow between '[" and ']' brackyes.
+	// So algorithm will be next:
+
+	// 1. Find selected menu item first character position in file content:
+	size_t foundPosition = std::wstring::npos;
+
+	CHECK_BOUNDS(selectedAudioMenuItem, AudioMenuItem::MusicOn, AudioMenuItem::BackToOptionsMenu);
+
 	switch (selectedAudioMenuItem)
 	{
-	case Game::AudioMenuItem::MusicOn:
-		foundPosition = audioMenuFileContent.find(L"On");
+	case AudioMenuItem::MusicOn:
+		foundPosition = content.find(L"On");
 		break;
 
-	case Game::AudioMenuItem::MusicOff:
-		foundPosition = audioMenuFileContent.find(L"Off");
+	case AudioMenuItem::MusicOff:
+		foundPosition = content.find(L"Off");
 		break;
 
-	case Game::AudioMenuItem::SoundsOn:
-		foundPosition = audioMenuFileContent.rfind(L"On");
+	case AudioMenuItem::SoundsOn:
+		foundPosition = content.rfind(L"On");
 		break;
 
-	case Game::AudioMenuItem::SoundsOff:
-		foundPosition = audioMenuFileContent.rfind(L"Off");
+	case AudioMenuItem::SoundsOff:
+		foundPosition = content.rfind(L"Off");
 		break;
 
-	case Game::AudioMenuItem::BackToOptionsMenu:
-		foundPosition = audioMenuFileContent.find(L"Back to options menu");
+	case AudioMenuItem::BackToOptionsMenu:
+		foundPosition = content.find(L"Back to options menu");
 		break;
-
-	default:
-		throw Exception(L"Variable 'selectedAudioMenuItem' is incorrect", __FILEW__, __FUNCTIONW__, __LINE__);
 	}
 
-	if (foundPosition == std::wstring::npos)
-	{
-		throw Exception(L"Variable 'foundPosition' == std::wstring::npos", __FILEW__, __FUNCTIONW__, __LINE__);
-	}
+	CHECK_EXPRESSION(foundPosition != std::wstring::npos);
 
 	if (selectedAudioMenuItem == AudioMenuItem::BackToOptionsMenu)
 	{
@@ -1053,6 +813,146 @@ void Game::UpdateAudioMenu()
 	}
 
 	// 3. Replace two whitespaces (' ') on characters '-' and '>':
-	audioMenuFileContent[foundPosition] = '-';
-	audioMenuFileContent[foundPosition + 1] = '>';
+	content[foundPosition] = '-';
+	content[foundPosition + 1] = '>';
 }
+
+void Game::UpdateGame()
+{
+	// TODO: Write code
+}
+#pragma endregion
+
+#pragma region RenderMethods
+void Game::RenderLogo(Logo logo)
+{
+	const std::wstring& content = fileManager.GetLogoContent(logo);
+	size_t length = content.length();
+
+	for (size_t i = 0; i < length; i++)
+	{
+		std::wcout << content[i];
+
+		if (content[i] == '\n')
+			Console::WaitForMilliseconds(50);
+	}
+
+	Console::WaitForMilliseconds(2000);
+	Console::ClearScreen();
+}
+
+void Game::RenderMenu()
+{
+	CHECK_BOUNDS(currentMenu, Menu::Main, Menu::Difficulties);
+
+	if (currentMenu != Menu::Tutorial)
+		std::wcout << fileManager.GetMenuContent(currentMenu);
+	else
+		std::wcout << fileManager.GetTutorialContent(currentTutorialPage);
+
+	Console::ResetCursorPosition();
+}
+
+void Game::RenderGame()
+{
+	// TODO: Write code
+}
+#pragma endregion
+
+#pragma region PublicMethods
+Game& Game::GetInstance()
+{
+	static Game game;
+	return game;
+}
+
+void Game::Initialize()
+{
+	// Set console properties:
+	Console::SetUnicodeCodepage();
+	Console::SetDimensions(windowWidth, windowHeight);
+	Console::HideCursor();
+	Console::DisableMaximizeButton();
+	Console::DisableScrollBars();
+	Console::SetTitle(title);
+	Console::SetFont(gameFontName, gameFontSize);
+	Console::SetWindowPositionOnScreenCenter();
+
+	// Read content from files:
+	fileManager.Initialize();
+
+	// Set color theme:
+	ReadColorThemeFromFile();
+	SetColorTheme();
+	SetPlusSignOnColorThemeMenuItem();
+
+	// Set audio settins:
+	audioManager.Initialize();
+	SetPlusSignOnAudioMenuItem();
+	if (audioManager.IsMusicOn())
+		audioManager.PlayMusic(Audio::BackgroundMenuMusic, true);
+
+	isRunning = true;
+}
+
+bool Game::IsRunning() const
+{
+	return isRunning;
+}
+
+void Game::HandleInput()
+{
+	CHECK_BOUNDS(currentScene, Scene::StartScreen, Scene::Game);
+
+	switch (currentScene)
+	{
+	case Scene::Menu:
+		HandleInputMenu();
+		break;
+
+	case Scene::Game:
+		HandleInputGame();
+		break;
+	}
+}
+
+void Game::Update()
+{
+	audioManager.Update();
+
+	CHECK_BOUNDS(currentScene, Scene::StartScreen, Scene::Game);
+
+	switch (currentScene)
+	{
+	case Scene::Menu:
+		UpdateMenu();
+		break;
+
+	case Scene::Game:
+		UpdateGame();
+		break;
+	}
+}
+
+void Game::Render()
+{
+	CHECK_BOUNDS(currentScene, Scene::StartScreen, Scene::Game);
+
+	switch (currentScene)
+	{
+	case Scene::StartScreen:
+		RenderLogo(Logo::Company);
+		RenderLogo(Logo::Game);
+		currentScene = Scene::Menu;
+		break;
+
+	case Scene::Menu:
+		RenderMenu();
+		break;
+
+	case Scene::Game:
+		RenderGame();
+		break;
+	}
+}
+#pragma endregion

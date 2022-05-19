@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include "../AudioManager/AudioManager.h"
+#include "../FileManager/FileManager.h"
 
 class Game
 {
@@ -10,130 +10,40 @@ private:
 
 	bool isRunning = false;
 
-	AudioManager& audioManager = AudioManager::GetReference();
+	// Managers:
+	AudioManager& audioManager = AudioManager::GetInstance();
+	FileManager& fileManager = FileManager::GetInstance();
 
-	// Console properties:
+	// Console required properties:
 	const std::wstring title = L"Console Sea Battle";
 	const std::wstring gameFontName = L"Consolas";
 	const int gameFontSize = 30;
 	const int windowWidth = 71;
 	const int windowHeight = 23;
 
-	std::wstring companyLogoFileContent;
-	const std::wstring companyLogoFileName = L"Resources/StartScreen/CompanyLogo.txt";
+	Scene currentScene = Scene::StartScreen;
 
-	std::wstring gameLogoFileContent;
-	const std::wstring gameLogoFileName = L"Resources/StartScreen/GameLogo.txt";
-
-	std::wstring mainMenuFileContent;
-	const std::wstring mainMenuFileName = L"Resources/Menus/MainMenu.txt";
-
-	std::wstring optionsMenuFileContent;
-	const std::wstring optionsMenuFileName = L"Resources/Menus/OptionsMenu.txt";
-
-	std::wstring colorThemesMenuFileContent;
-	const std::wstring colorThemesMenuFileName = L"Resources/Menus/ColorThemesMenu.txt";
-
-	std::wstring audioMenuFileContent;
-	const std::wstring audioMenuFileName = L"Resources/Menus/AudioMenu.txt";
-
-	std::wstring creditsMenuFileContent;
-	const std::wstring creditsMenuFileName = L"Resources/Credits/Credits.txt";
-
-	std::wstring difficultiesMenuFileContent;
-	const std::wstring difficultiesMenuFileName = L"Resources/Menus/DifficultiesMenu.txt";
-
+	// Tutorial pages info:
 	static const int TUTORIAL_PAGES_COUNT = 3;
-	std::wstring tutorialPagesFileContent[TUTORIAL_PAGES_COUNT];
-	const std::wstring tutorialPagesFileNames[TUTORIAL_PAGES_COUNT] =
-	{
-		L"Resources/Tutorial/TutorialPage1.txt",
-		L"Resources/Tutorial/TutorialPage2.txt",
-		L"Resources/Tutorial/TutorialPage3.txt"
-	};
-	int currentPage = 0;
+	int currentTutorialPage = 0;
 
+	// Menus & menu items info:
+	Menu currentMenu = Menu::Main;
+	MainMenuItem selectedMainMenuItem = MainMenuItem::StartGame;
+	OptionsMenuItem selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
+	DifficultiesMenuItem selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
+	ColorThemesMenuItem selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
+	AudioMenuItem selectedAudioMenuItem = AudioMenuItem::MusicOn;
+	
+	// Color theme info:
+	ColorTheme currentColorTheme = ColorTheme::WhiteBlack; // default value
 	const std::wstring colorThemeInfoFileName = L"Resources/Data/ColorTheme.bin";
 
-	enum class Scene
-	{
-		StartScreen,
-		Menu,
-		Game
-	} currentScene = Scene::StartScreen;
-
-	enum class Menu
-	{
-		Main,
-		Options,
-		Tutorial,
-		ColorThemes,
-		Audio,
-		Credits,
-		Difficulties
-	} currentMenu = Menu::Main;
-
-	enum class MainMenuItem
-	{
-		StartGame,
-		Options,
-		Tutorial,
-		Exit
-	} selectedMainMenuItem = MainMenuItem::StartGame;
-
-	enum class OptionsMenuItem
-	{
-		ColorTheme,
-		Audio,
-		Credits,
-		BackToMainMenu
-	} selectedOptionsMenuItem = OptionsMenuItem::ColorTheme;
-
-	enum class DifficultiesMenuItem
-	{
-		Easy,
-		Normal,
-		Hard,
-		BackToMainMenu
-	} selectedDifficultiesMenuItem = DifficultiesMenuItem::Easy;
-
-	enum class ColorThemesMenuItem
-	{
-		WhiteBlack,
-		BlueAqua,
-		BlackWhite,
-		PurpleYellow,
-		BackToOptionsMenu
-	} selectedColorThemesMenuItem = ColorThemesMenuItem::WhiteBlack;
-
-	enum class AudioMenuItem
-	{
-		MusicOn,
-		MusicOff,
-		SoundsOn,
-		SoundsOff,
-		BackToOptionsMenu
-	} selectedAudioMenuItem = AudioMenuItem::MusicOn;
-
-	enum class ColorTheme
-	{
-		WhiteBlack,
-		BlueAqua,
-		BlackWhite,
-		PurpleYellow,
-	} currentColorTheme = ColorTheme::WhiteBlack; // default value
-
-	enum class Difficulty
-	{
-		Easy,
-		Normal,
-		Hard,
-		None
-	} difficulty = Difficulty::None;
+	Difficulty difficulty = Difficulty::None;
 
 	void ReadColorThemeFromFile();
-	void WriteColorThemeToFile() const;
 	void SetColorTheme() const;
+
 	void SetPlusSignOnColorThemeMenuItem();
 	void SetPlusSignOnAudioMenuItem();
 
@@ -149,6 +59,7 @@ private:
 		selectedItem = (selectedItem == lastItem) ? firstItem : static_cast<MenuItem>(static_cast<int>(selectedItem) + 1);
 	}
 
+#pragma region HandleInputMethods
 	void HandleInputMenu();
 	void HandleInputMainMenu();
 	void HandleInputTutorialMenu();
@@ -157,16 +68,24 @@ private:
 	void HandleInputDifficultiesMenu();
 	void HandleInputColorThemesMenu();
 	void HandleInputAudioMenu();
+	void HandleInputGame();
+#pragma endregion
 
+#pragma region UpdateMethods
 	void UpdateMenu();
 	void UpdateMainMenu();
 	void UpdateOptionsMenu();
 	void UpdateDifficultiesMenu();
 	void UpdateColorThemesMenu();
 	void UpdateAudioMenu();
+	void UpdateGame();
+#pragma endregion
 
-	void RenderLogo(const std::wstring& logoContent);
+#pragma region RenderMethods
+	void RenderLogo(Logo logo);
 	void RenderMenu();
+	void RenderGame();
+#pragma endregion
 
 public:
 	Game(const Game&) = delete;
@@ -178,31 +97,4 @@ public:
 	void HandleInput();
 	void Update();
 	void Render();
-
-#pragma region Exception
-	class Exception
-	{
-	private:
-		std::wstring message;
-		std::wstring functionName;
-		std::wstring fileName;
-		unsigned int lineNumber;
-
-	public:
-		Exception(
-			const std::wstring& message = L"No message", 
-			const std::wstring& functionName = L"No function name", 
-			const std::wstring fileName = L"No file name",
-			unsigned int lineNumber = 0)
-			: message(message), functionName(functionName), fileName(fileName), lineNumber(lineNumber)
-		{ }
-
-		const std::wstring& Message() const { return message; }
-		const std::wstring& FunctionName() const { return functionName; }
-		const std::wstring& FileName() const { return fileName; }
-		unsigned int LineNumber() const { return lineNumber; }
-	};
-
-	static void HandleException(const Exception& exc);
-#pragma endregion
 };

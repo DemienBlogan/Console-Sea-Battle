@@ -120,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SourceCode\AudioManager\AudioManager.h" />
+    <ClInclude Include="SourceCode\Debug\Debug.h" />
     <ClInclude Include="SourceCode\DirectXTK\Includes\Audio.h" />
     <ClInclude Include="SourceCode\DirectXTK\Includes\BufferHelpers.h" />
     <ClInclude Include="SourceCode\DirectXTK\Includes\CommonStates.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="SourceCode\DirectXTK\Includes\VertexTypes.h" />
     <ClInclude Include="SourceCode\DirectXTK\Includes\WICTextureLoader.h" />
     <ClInclude Include="SourceCode\DirectXTK\Includes\XboxDDSTextureLoader.h" />
+    <ClInclude Include="SourceCode\Game\GameEnumerations.h" />
     <ClInclude Include="SourceCode\Input\Input.h" />
     <ClInclude Include="SourceCode\FileManager\FileManager.h" />
     <ClInclude Include="SourceCode\Console\Console.h" />
@@ -185,7 +188,6 @@
   <ItemGroup>
     <Text Include="Resources\Credits\Credits.txt" />
     <Text Include="Resources\Menus\ColorThemesMenu.txt" />
-    <Text Include="Resources\Menus\ConfirmationMenu.txt" />
     <Text Include="Resources\Menus\DifficultiesMenu.txt" />
     <Text Include="Resources\Menus\MainMenu.txt" />
     <Text Include="Resources\Menus\AudioMenu.txt" />

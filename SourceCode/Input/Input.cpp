@@ -5,7 +5,7 @@ Input::Key Input::pressedKey = Input::Key::None;
 
 bool Input::PressKey()
 {
-	// Function '_kbhit' returns true, is user press any key.
+	// Function '_kbhit' returns true, if user presses any key.
 	return _kbhit();
 }
 
